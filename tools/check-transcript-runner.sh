@@ -56,5 +56,5 @@ need "claude --model"
 
 need "grep -i -F \"<tag>\" transcripts/stakeholders.md"
 
-need "`roles.md` says what each speaker role may and may not yield"
+need 'roles.md` says what each speaker role may and may not yield'
 exit $fail
