@@ -62,10 +62,10 @@ Asks and events are work first and record later. Requirements, discoveries and c
 | ID | Type prefix plus zero-padded number, e.g. REQ-014, DEC-003, LIM-021, RSK-007, OI-045, CR-002. Never reused. |
 | Title | One line, specific. |
 | Status | One of the values for the type (4.2). |
-| Owner | A named person on our side, or "Vendor" plus a named vendor contact, or "Joint". Required on every requirement and open item that is not in a terminal state. Not used on decisions, limitations, risks or change requests, which carry Raised by instead. While a decision is Proposed, a limitation is Under assessment or a change request is not yet Approved, the open item driving it carries the owner. Risks have no standing owner; they are reviewed on their review date by the routine in section 10, and a realised risk raises an open item. |
+| Owner | A named person on our side, or "Vendor" plus a named vendor contact, or "Joint". Required on every requirement and open item that is not in a terminal state. Not used on decisions, limitations, risks, change requests or processes, which carry Raised by instead. While a decision is Proposed, a limitation is Under assessment or a change request is not yet Approved, the open item driving it carries the owner. Risks have no standing owner; they are reviewed on their review date by the routine in section 10, and a realised risk raises an open item. |
 | Scope | One value from the scope taxonomy (6). |
-| Implemented by | Vendor, Internal or Both. Whose build the item lands in. Required on requirements, decisions, limitations and change requests. Optional on risks and open items. |
-| Vendor ref | The vendor's id for the corresponding item, if one exists. Otherwise blank. Not used on decisions; a vendor document reference goes in Source. |
+| Implemented by | Vendor, Internal or Both. Whose build the item lands in. Required on requirements, decisions, limitations and change requests. Optional on risks and open items. Not used on processes. |
+| Vendor ref | The vendor's id for the corresponding item, if one exists. Otherwise blank. Not used on decisions; a vendor document reference goes in Source. Not used on processes. |
 | Links | Ids of related items, with the relationship word (5). |
 | Next action | Required on open items that are not Closed. Not used on any other type; the open item driving a record carries it. |
 | Due | Date for the next action, on open items. On a risk, Due is the date the risk is next reviewed, and is required while the risk is not in a terminal state. Not used on other types. |

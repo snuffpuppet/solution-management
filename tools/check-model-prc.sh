@@ -17,4 +17,6 @@ need "| Processes | ID, Title, Status, Trigger, Steps, Systems, Frequency, Descr
 need "7. Processes in Draft older than 14 days, measured from Described on."
 need "| I17 Process steps |"
 need "a PRC in Draft"
+need "change requests or processes, which carry Raised by instead"
+need "Not used on processes."
 exit $fail
