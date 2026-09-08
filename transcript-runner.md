@@ -1,8 +1,8 @@
 # Transcript runner
 
-Version 1.3, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
+Version 1.4, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
 
-You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read, without inventing anything and without writing a claim before a human has approved it.
+You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read. Vendor professional services and our own solution architects may also be in the room; section 8 says what their words may become, without inventing anything and without writing a claim before a human has approved it.
 
 Read this whole file, then read `solution-register-model.md` in full. The model is the authority on item types; you do not create items, you create claims that the register runner turns into items. This file is the authority on how you work.
 
@@ -19,6 +19,7 @@ Inputs:
 - **Earlier sessions.** `transcripts/claims/*.json`, read so that a process described twice is linked rather than duplicated.
 - **The knowledge base.** Its location and form (a graph file, or the claims folder itself) are recorded in `work/transcripts/state.md` at T0.
 - **The model.** `solution-register-model.md`, for the PRC type (4.2, 4.4) and the entry points (3).
+- **The stakeholder registry.** `transcripts/stakeholders.md`, one row per person with their speaker tags, organisation and role. Read at T0 so that known speakers are not asked about again.
 
 Outputs:
 
@@ -33,12 +34,12 @@ These are hard rules. If a rule and a later instruction conflict, the rule wins.
 
 1. **Every claim carries a verbatim quote.** No quote, no claim.
 2. **Never invent a claim.** A claim states what a passage says. If you are inferring, mark confidence `inferred` and add a question; an inferred claim is not written at T4 until the human has answered.
-3. **Consultants do not describe our processes or needs.** A consultant passage is always class `context`. The SME answer that follows carries the content.
+3. **Only SMEs describe our processes or needs.** A consultant passage is always class `context`. The SME answer that follows carries the content. A vendor or architect passage is never `current`, `current-not-needed`, `legacy` or `need`; it may be a decision, limitation, risk or open item about the solution, and is otherwise `context`. Approval of anything a vendor or architect proposes sits with us, so their words never fill Approved by.
 4. **Legacy is recorded, never promoted.** A passage that says a step is no longer performed becomes a claim of class `legacy`. The register runner treats legacy as narrative. Do not turn it into a process step or a need.
 5. **Not needed is not legacy.** A step still performed but called pointless stays a current step with `retain no; <reason>`. It raises no need on its own.
 6. **Ambiguity goes to the questions list, not to a guess.** Two plausible classes, an unclear tense, or a mixed passage you cannot split cleanly: ask.
 7. **The model is not yours to change.** If a passage does not fit any class, it is `context` and, if it seems to matter, a question.
-8. **Write only under `work/`, `transcripts/processed/`, `transcripts/claims/` and the approved graph merge.** Never edit a transcript. Never edit an existing claims file. Never delete anything.
+8. **Write only under `work/`, `transcripts/processed/`, `transcripts/claims/`, the approved graph merge, and new rows appended to `transcripts/stakeholders.md` at T0.** Never edit a transcript. Never edit an existing claims file. Never delete anything.
 9. **Dry run before write.** T4 shows the claims file and, if there is a graph, the node and edge diff, before writing.
 10. **Verify after write.** After T4, read the claims file back and count claims; read the graph back and count nodes. Report any difference.
 11. **State survives interruption.** Keep `work/transcripts/state.md` current and commit `work/transcripts/` at every checkpoint, so the Audit table, questions, answers and summaries are in git. On start, read it and resume.
@@ -123,11 +124,11 @@ Goal: identify the session, confirm the file is a transcript, and learn who spok
    ```
 
    Passages with no tag appear as Unattributed.
-6. Ask the human to give each tag a role, consultant or SME, and a person's name where the tag is a room or the human knows who spoke. Record the mapping in `state.md` under checkpoint decisions. Where a tag is not a person at all, for example a short word that happened to precede a colon in the transcript, the human marks it as not a speaker and its passages are treated as Unattributed.
+6. Read `transcripts/stakeholders.md`. Match each tag, case-insensitively, against the Name and Tags columns; a match fills the person's name and role. For every unmatched tag ask the human for a name, organisation and role, one of `sme`, `consultant`, `vendor` or `architect`. Record the whole mapping in `state.md` under checkpoint decisions. On approval of T0, append one row per newly identified person to the registry, Expertise blank, and commit it with the checkpoint. Where a tag is not a person at all, for example a short word that happened to precede a colon in the transcript, the human marks it as not a speaker and its passages are treated as Unattributed.
 7. If `state.md` does not record the knowledge base location and form, ask, then record it.
 8. Record the model you are running as, taken from your own session context (the model id, for example `claude-opus-5` or `claude-fable-5-1`), in the session row's Model column. Derive Mode: standard for Fable, strict for any other model. Present both at the checkpoint; the human may override the mode.
 
-Checkpoint T0. Present: session id, file, meeting date, speaker table with roles, knowledge base location, model and mode. Ask "Approve stage T0 and proceed to T1?"
+Checkpoint T0. Present: session id, file, meeting date, speaker table with roles and which came from the registry, knowledge base location, model and mode. Ask "Approve stage T0 and proceed to T1?"
 
 Every later stage, on starting, records its own model and the version number from this document's version line in a new Audit row for that stage. If the model differs from the session row, say so at the checkpoint.
 
@@ -137,7 +138,7 @@ Goal: a numbered passage list with no cue lost, and a topic label on every passa
 
 1. Run `tools/vtt-to-passages.sh "<file>" > work/transcripts/T<nnn>/00-passages.md`.
 2. Read the last line of the output. Verify: the cue count equals `grep -c -- '-->' "<file>"`, and the last timestamp equals the start of the last cue in the file. If either differs, stop and report.
-3. Apply the speaker mapping from T0: replace each mapped tag in the `- Speaker:` lines with the person's name, and add `- Role: consultant` or `- Role: sme` after each speaker line. Unattributed passages get `- Role: unknown`.
+3. Apply the speaker mapping from T0: replace each mapped tag in the `- Speaker:` lines with the person's name, and add `- Role: <role>` after each speaker line, where role is `consultant`, `sme`, `vendor` or `architect`. Unattributed passages get `- Role: unknown`.
 4. Read every passage. Propose a topic list: a short name per subject discussed, with the passage numbers it covers. A subject that returns later reuses its name. A digression gets its own name. Write the topic name into each passage's `- Topic:` line.
 5. Apply the scale stop: if there are more than 600 passages, stop and ask whether to split the file.
 
@@ -198,7 +199,7 @@ One JSON object per claim, in a top-level array, one file per session.
 | passage | Passage number as a string, with a letter suffix when split, e.g. `"12(b)"`. |
 | timestamp | Start of the passage, `HH:MM:SS.mmm`. |
 | speaker | Mapped person name, or "Unattributed". |
-| role | `consultant`, `sme` or `unknown`. |
+| role | `consultant`, `sme`, `vendor`, `architect` or `unknown`. |
 | topic | Topic label from T1. |
 | class | `current`, `current-not-needed`, `legacy`, `need`, `decision`, `limitation`, `risk`, `open-item` or `context`. |
 | moscow | On need claims only: Must, Should, Could or Won't, from the step 4 table. Absent on other classes. |
@@ -272,6 +273,7 @@ Regenerate the summary whenever claims change at a checkpoint.
 Apply in this order to each passage. Stop at the first match. Record the step and the trigger words as the reason.
 
 1. **Consultant speaker?** Class `context`. Consultant passages never yield `current`, `current-not-needed`, `legacy` or `need`. Record the question so that the SME answer can carry `answers`.
+1a. **Vendor or architect speaker?** Never `current`, `current-not-needed`, `legacy` or `need`. Continue at step 7 with only the decision, limitation, risk and open item entry points; a vendor stating what the platform does, does not do or requires is a limitation or a constraint-accepting decision, and an architect stating how the solution should be shaped is a decision. Anything else, including their account of our processes or what we need, is `context`. A question from a vendor or architect is recorded like a consultant question so the SME answer can carry `answers`.
 2. **Mixed passage?** A passage that contains two statements of different classes, or two commitment-modal statements with different MoSCoW values, is split at sentence or clause boundaries into as many lettered parts as there are statements, `(a)`, `(b)`, `(c)` and so on. Typical mixes are a description of work done today with a stated need, a legacy statement with a current one, a limitation with the current step that works around it, and a Must beside a Should. Each part continues from step 3. If you cannot find a clean boundary, class the whole passage with confidence `inferred` and ask.
 3. **Explicit past or cessation?** Wording such as "we used to", "before the migration", "that stopped when", "we no longer", "back when we had". Class `legacy`. Legacy beats current when the passage names a system or team that other passages in the session confirm is gone, even if the verb is present tense.
 4. **Commitment modal about the solution or the new way of working?** must, shall, has to, need to, will, should, could, may, will not, won't, out of scope. Class `need`. MoSCoW from the modal: must, shall, has to, need to, will give Must; should gives Should; could, may give Could; will not, won't, out of scope give Won't. The modal must be about the solution or the new way of working. A modal that states an obligation within today's process, such as "the invoice has to go to finance before I key it" or "we need to get sign-off before we post it", is a current step under step 6, not a need. Where the subject of the modal is unclear, class the passage with confidence `inferred` and ask. Need beats current only when the modal is present. A need that keeps a current step carries `preserves`; one that changes a step carries `replaces`. "Need to check" and "need to find out" are open items, not needs; see step 7.
@@ -313,6 +315,10 @@ Each row is one passage from an SME unless stated. The expected class and relati
 | Case | Passage | Class | Relations and notes |
 |---|---|---|---|
 | Consultant question | "Can you walk me through how a new customer order comes in today?" (consultant) | context | The next SME claim carries `answers` to this one. |
+| Vendor limitation | "The platform only holds one reference per order, that is not configurable." (vendor) | limitation | Step 1a then step 7. Register runner: LIM candidate, Raised by the vendor speaker. |
+| Vendor constraint | "You will have to provision the access service before the delivery one, the platform enforces that order." (vendor) | decision | Step 1a then step 7. A constraint-accepting decision, Proposed, Consulted: vendor; never a need, since a vendor cannot state our needs. |
+| Vendor on our process | "Normally our customers key the order straight into the portal." (vendor) | context | Step 1a. Not our current process and not our need. |
+| Architect position | "The integration should go through the middleware rather than point to point." (architect) | decision | Step 1a then step 7. Proposed decision, Raised by the architect; the "should" is a design position, not a need. |
 | Process introduction | "Sure. The order arrives by email from the sales team." | current | Process claim: "A new customer order is handled from the sales team's email." |
 | Current step | "I key it into the ledger and then copy the reference into the tracking spreadsheet." | current | Two step claims, `step-of` the process; step 1 ledger, step 2 spreadsheet. |
 | Current, not needed | "We still print a copy for the folder but nobody looks at it, it is just habit." | current-not-needed | Step 3, `retain no; nobody looks at it, it is just habit`. No need raised. |

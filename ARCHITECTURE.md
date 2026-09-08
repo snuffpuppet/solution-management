@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.5, 9 September 2026. Owner: Adam Moyes.
+Version 1.6, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -17,7 +17,7 @@ A set of playbook-style markdown documents, plus a few shell tools, for managing
 | Transcript runner | `transcript-runner.md` | How a WebVTT transcript becomes atomic claims for the register runner. |
 | Tools | `tools/` | Deterministic shell: the parser, the report script, their tests, and grep checks over the documents. |
 | Skills | `.claude/skills/` | Thin slash commands that launch a runner or a tool. They hold no rules of their own. |
-| Data | `transcripts/` | Input (ignored), processed transcripts and claims (committed). |
+| Data | `transcripts/` | Input, processed transcripts, claims and the stakeholder registry (all committed). |
 | Working state | `work/` | Per-run state, questions, drafts, summaries and reports. Committed at every checkpoint; only `tmp/` subfolders are scratch. |
 
 ---
@@ -132,7 +132,7 @@ Every runner document has the same skeleton, and a new runner must keep it:
 
 | Gate | What the human sees | What approval releases |
 |---|---|---|
-| T0 | Speakers, roles, meeting date, model and mode | Parsing |
+| T0 | Speakers, roles (prefilled from the stakeholder registry), meeting date, model and mode | Parsing, and the registry rows for new speakers |
 | T1 | Passage count, cue check, topics | Classification |
 | T2 | Counts per class, every inferred classification as a question | Claim assembly, once every question is answered |
 | T3 | Claims table, processes with Retain flags, legacy list, summary | The write |

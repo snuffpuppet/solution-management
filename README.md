@@ -1,6 +1,6 @@
 # Solution management
 
-Version 1.3, 9 September 2026.
+Version 1.4, 9 September 2026.
 
 ## Quickstart
 
@@ -13,7 +13,7 @@ The stages and what each asks you:
 
 | Stage | What it does | What it asks you |
 |---|---|---|
-| T0 Register | Assigns the session id, reads the speakers, records the model | Confirm who spoke, their roles (consultant or SME), the meeting date, and the mode |
+| T0 Register | Assigns the session id, reads the speakers, records the model | Confirm who spoke and their roles (SME, consultant, vendor or architect), the meeting date, and the mode. Speakers already in `transcripts/stakeholders.md` are filled in for you |
 | T1 Passages | Splits the transcript into passages and groups them by topic | Rename or merge topics |
 | T2 Classify | Gives every passage one class: current, legacy, need, context and so on | Answer every numbered question where it was unsure; it will not go on until all are answered |
 | T3 Assemble | Turns classified passages into claims, with quotes, and links them to earlier sessions | Whether a process seen before is an update or a distinct process |
@@ -27,6 +27,7 @@ Each session gets `T` plus a three-digit number, one higher than any id already 
 | `transcripts/processed/T<nnn>-meeting.vtt` | The transcript, moved out of `input/` with the id prefixed |
 | `work/transcripts/T<nnn>/` | Passages, classifications, the claims draft, your questions and answers, and the session summary |
 | `work/transcripts/state.md` | The session table and audit rows across every ingestion |
+| `transcripts/stakeholders.md` | Who may appear in a transcript, with their speaker tags and role; grows as sessions are ingested |
 
 Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
 
