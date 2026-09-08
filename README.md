@@ -19,6 +19,14 @@ The registers give every item one home, one owner and one next action. The trans
 
 You need Claude Code and a checkout of this repository. Nothing else is installed.
 
+**Start a session.** Open Claude Code in the repository and say:
+
+```
+Read HANDOVER.md and continue from its next action.
+```
+
+The handover file says where the last session stopped. The agent also checks that nothing is uncommitted and that the document checks pass before it starts. If a runner was left mid-stage, it tells you and resumes from that stage rather than starting again.
+
 **Ingest a transcript.** Export the meeting from Teams or Webex as a `.vtt` file, then in Claude Code type:
 
 ```
@@ -39,6 +47,16 @@ It shows, per session and per model, how many questions the runner asked and how
 
 **Maintain the registers by hand.** The rules for adding an item, closing an open item and running the weekly routine are in the model document, section 10. They take a few minutes per item.
 
+**End a session.** Say "hand over" or type:
+
+```
+/handover
+```
+
+The agent commits finished work, rewrites `HANDOVER.md` with what is in flight and the next action, records anything deferred in `ENHANCEMENTS.md`, and gives you the line to paste next time. You choose when this happens; nothing runs automatically. If you want it enforced, `CLAUDE.md` shows the one-line hook to add to your own settings.
+
+**Everything is in git.** Transcripts, claims, the runners' state and questions, your answers, session summaries and reports are all committed, so any session can be reconstructed later. `LOG.md` records what changed and why, including the judgement calls the agent made on your behalf.
+
 ## Going deeper
 
 Each file below is the single source for its subject. This README does not repeat their content.
@@ -58,4 +76,4 @@ Each file below is the single source for its subject. This README does not repea
 | `transcripts/` | Where transcripts go in and where processed transcripts and claims come out. |
 | `diagrams/` | Pictures of the model: a day in the life, one requirement through the registers, and the open item queue. |
 
-`work/` is created by the runners for their state, questions and summaries and is committed at every checkpoint. `HANDOVER.md` says where the last session stopped; read it first when resuming.
+`work/` holds the runners' state, questions and summaries and is committed at every checkpoint.
