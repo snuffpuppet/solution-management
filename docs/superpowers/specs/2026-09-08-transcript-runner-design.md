@@ -132,6 +132,8 @@ One claim per atomic statement. Fields:
 | class | One of: current, current-not-needed, legacy, need, decision, limitation, risk, open-item, context. |
 | confidence | extracted or inferred. Inferred means the class or a relation was the runner's judgement rather than the passage's wording. |
 | relations | List of `<relation> <target>` where target is a claim id. Relations: `step-of` (a step claim to its process claim, with `step n`), `retain no; <reason>` on a step claim, `replaces` and `preserves` (a need claim to a step claim), `answers` (an SME claim to the consultant question claim before it), `about` (a context claim to a process claim), `same-as` (a process claim to an earlier session's process claim). |
+| runner_model | The model id that classified the claim at T2. |
+| runner_mode | standard or strict, from the session row. |
 
 A process is represented as one claim of class current with `statement` naming the process and its trigger, and one claim per step carrying `step-of` and `step n`. Systems and frequency, when stated, are claims of class context with an `about` relation to the process claim.
 
@@ -196,7 +198,11 @@ work/
 
 ### 7.2 State file
 
-`work/transcripts/state.md` holds one row per session: id, file name, meeting date, stage (T0 to T4), status (in progress, awaiting approval, complete), last update. Below the table: the location of the knowledge base and its form (graph file or other), and the last claim number per session. On start the runner reads the file and resumes the first session that is not complete.
+`work/transcripts/state.md` holds one row per session: id, file name, meeting date, stage (T0 to T4), status (in progress, awaiting approval, complete), model, mode, last update. Below the table: the location of the knowledge base and its form (graph file or other), the last claim number per session, and an Audit table with one row per stage run (session, stage, model, mode, date, passage count, claim count, questions raised, classes changed by the human's answers). On start the runner reads the file and resumes the first session that is not complete.
+
+### 7.2a Model awareness and mode
+
+The runner records the model it is running as, from its own session context, at T0 and at the start of every later stage. Mode is derived from the model at T0: standard for Fable, strict for any other model, overridable by the human. Only T2 differs by mode. Both modes run a self-check after classification that downgrades unjustifiable classifications to inferred; strict mode also downgrades every need whose modal does not explicitly name the solution, and every clause-boundary split. Each claim carries `runner_model` and `runner_mode`. The Audit table's questions raised and classes changed columns are the measure of a model's effect, and the runner document describes how to run T2 under two models for the same session to compare them.
 
 ### 7.3 Checkpoint protocol
 

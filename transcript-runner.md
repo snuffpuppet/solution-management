@@ -1,6 +1,6 @@
 # Transcript runner
 
-Version 1.0, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
+Version 1.1, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
 
 You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read, without inventing anything and without writing a claim before a human has approved it.
 
@@ -82,14 +82,25 @@ knowledge_base: <path, or "claims folder">
 knowledge_base_form: graph | claims folder
 last_update: <ISO date>
 
-| Session | File | Meeting date | Stage | Status | Last update |
-|---|---|---|---|---|---|
-| T001 | discovery-billing.vtt | 2026-09-15 | T4 | complete | 2026-09-16 |
-| T002 | discovery-orders.vtt | 2026-09-17 | T2 | awaiting approval | 2026-09-17 |
+| Session | File | Meeting date | Stage | Status | Model | Mode | Last update |
+|---|---|---|---|---|---|---|---|
+| T001 | discovery-billing.vtt | 2026-09-15 | T4 | complete | claude-opus-5 | strict | 2026-09-16 |
+| T002 | discovery-orders.vtt | 2026-09-17 | T2 | awaiting approval | claude-fable-5-1 | standard | 2026-09-17 |
+
+## Audit
+
+| Session | Stage | Model | Mode | Date | Passages | Claims | Questions raised | Class changed by human |
+|---|---|---|---|---|---|---|---|---|
+| T001 | T2 | claude-opus-5 | strict | 2026-09-16 | 212 | | 31 | 9 |
+| T001 | T3 | claude-opus-5 | strict | 2026-09-16 | 212 | 187 | 4 | 1 |
 
 checkpoint_decisions:
   - <date> T002: <decision the human made, verbatim where short>
 ```
+
+Model and Mode on the session row are the model that ran T0 and the mode chosen there. The Audit table has one row per stage run, so a session whose stages ran under different models shows each. Questions raised is the count of questions the stage produced; Class changed by human is how many of those answers overturned the runner's proposed class. Comparing those two columns across models is how the effect of a model change is measured.
+
+Mode is `standard` or `strict`. It is derived from the model at T0, standard for Fable and strict for every other model, and the human may override it at the T0 checkpoint. Strict mode changes only T2, as described there.
 
 Session ids are `T` plus a zero-padded three-digit number, assigned from the highest existing id in `work/transcripts/` and `transcripts/claims/` plus one. Claim ids are `T<nnn>-C<nnn>` and number from 001 within a session.
 
@@ -114,8 +125,11 @@ Goal: identify the session, confirm the file is a transcript, and learn who spok
    Count cues with no tag as Unattributed.
 6. Ask the human to give each tag a role, consultant or SME, and a person's name where the tag is a room or the human knows who spoke. Record the mapping in `state.md` under checkpoint decisions. Where a tag is not a person at all, for example a short word that happened to precede a colon in the transcript, the human marks it as not a speaker and its passages are treated as Unattributed.
 7. If `state.md` does not record the knowledge base location and form, ask, then record it.
+8. Record the model you are running as, taken from your own session context (the model id, for example `claude-opus-5` or `claude-fable-5-1`), in the session row's Model column. Derive Mode: standard for Fable, strict for any other model. Present both at the checkpoint; the human may override the mode.
 
-Checkpoint T0. Present: session id, file, meeting date, speaker table with roles, knowledge base location. Ask "Approve stage T0 and proceed to T1?"
+Checkpoint T0. Present: session id, file, meeting date, speaker table with roles, knowledge base location, model and mode. Ask "Approve stage T0 and proceed to T1?"
+
+Every later stage, on starting, records its own model in a new Audit row for that stage. If the model differs from the session row, say so at the checkpoint.
 
 ### T1. Passages and topics
 
@@ -135,10 +149,11 @@ Goal: one class per passage, with reasons, and every doubt turned into a questio
 
 1. Apply section 8 to every passage in order. Where step 2 of the guide applies, split the passage into lettered parts, `(a)`, `(b)`, `(c)` and so on, and class each part.
 2. Write `01-classified.md` as a table: Passage, Speaker, Role, Class, Confidence, Reason, Notes. Reason is the guide step that matched and the words that triggered it.
-3. Every passage with confidence `inferred` becomes a numbered question in `02-questions.md`: the passage number, the quote, the proposed class, the alternative, and what would settle it.
-4. Present counts per class.
+3. **Self-check.** Re-read every passage classed `current`, `current-not-needed` or `need` against the appendix rows and the section 8 step 4 subject test. Downgrade to `inferred` any classification you cannot justify from the quote's own words. In strict mode also downgrade to `inferred` every `need` whose modal does not name the solution or the new way of working explicitly, and every split you made at a clause boundary rather than a sentence boundary. Record in the Notes column which classifications the self-check changed.
+4. Every passage with confidence `inferred` becomes a numbered question in `02-questions.md`: the passage number, the quote, the proposed class, the alternative, and what would settle it.
+5. Present counts per class, and the count of self-check downgrades.
 
-Checkpoint T2. Present: counts per class, the questions. Ask the human to answer them. When every question has an answer, apply the answers, regenerate `01-classified.md`, present the final counts, and ask "Approve stage T2 and proceed to T3?" Do not proceed while any question from this stage is unanswered.
+Checkpoint T2. Present: counts per class, the questions. Ask the human to answer them. When every question has an answer, apply the answers, regenerate `01-classified.md`, count how many answers changed the proposed class, write the Audit row for T2 with questions raised and classes changed, present the final counts, and ask "Approve stage T2 and proceed to T3?" Do not proceed while any question from this stage is unanswered.
 
 ### T3. Assemble claims
 
@@ -153,7 +168,7 @@ Goal: the claims for this session, grouped into processes and linked.
 7. Write `02-claims-draft.md`: a table with Id, Passage, Speaker, Class, Confidence, Statement, Relations. Below it, list legacy claims with quote and speaker.
 8. Write `03-summary.md` (section 7).
 
-Checkpoint T3. Present: claim count by class, process count with step counts and Retain: No counts, need count, legacy count, `same-as` questions, and the summary. Ask "Approve stage T3 and proceed to T4?"
+Checkpoint T3. Present: claim count by class, process count with step counts and Retain: No counts, need count, legacy count, `same-as` questions, and the summary. When the questions are answered, write the Audit row for T3 with claim count, questions raised and classes changed. Ask "Approve stage T3 and proceed to T4?"
 
 ### T4. Write claims
 
@@ -189,6 +204,8 @@ One JSON object per claim, in a top-level array, one file per session.
 | moscow | On need claims only: Must, Should, Could or Won't, from the step 4 table. Absent on other classes. |
 | confidence | `extracted` or `inferred`. |
 | relations | Array of strings, each `<relation> <target claim id>` with optional `; <detail>`. Relations: `step-of <id>; step n`, `retain no; <reason>`, `replaces <id>`, `preserves <id>`, `answers <id>`, `about <id>`, `same-as <id>`. |
+| runner_model | The model id that classified the claim at T2, from the Audit row, for example `"claude-opus-5"`. |
+| runner_mode | `standard` or `strict`, from the session row. |
 | source_kind | Always `"transcript"`. |
 
 Example:
@@ -209,6 +226,8 @@ Example:
     "class": "current",
     "confidence": "extracted",
     "relations": ["answers T003-C015"],
+    "runner_model": "claude-opus-5",
+    "runner_mode": "strict",
     "source_kind": "transcript"
   },
   {
@@ -225,6 +244,8 @@ Example:
     "class": "current",
     "confidence": "extracted",
     "relations": ["step-of T003-C016; step 1"],
+    "runner_model": "claude-opus-5",
+    "runner_mode": "strict",
     "source_kind": "transcript"
   }
 ]
@@ -236,7 +257,7 @@ A process is one claim of class `current` naming the process and its trigger, pl
 
 `03-summary.md` has these headed sections, in order:
 
-1. **Session.** Id, meeting date, source file, duration (last cue end), speakers with role and the share of passages attributed to a named person. A warning line if no speaker tags were present at all.
+1. **Session.** Id, meeting date, source file, duration (last cue end), speakers with role and the share of passages attributed to a named person, the model and mode per stage from the Audit table, and the self-check downgrade count. A warning line if no speaker tags were present at all.
 2. **Topics.** One row per topic: name, passage range, who led it, claim ids produced.
 3. **Processes described.** One row per process claim: statement, step count, Retain: No count, speakers.
 4. **Needs raised.** One row per need claim: statement, MoSCoW from the modal, the step it replaces or preserves if any.
@@ -260,6 +281,30 @@ Apply in this order to each passage. Stop at the first match. Record the step an
 8. **Otherwise `context`.** Facts, volumes, roles, systems, frequencies, small talk. Context claims that name a system or frequency for a process carry `about`.
 
 Confidence is `extracted` when the trigger words are in the quote. It is `inferred` when you relied on surrounding passages, tone or your own judgement, and every inferred classification is a question.
+
+## 9. Running this runner
+
+From the project folder, with the model you have access to:
+
+```
+claude --model claude-opus-5
+```
+
+or
+
+```
+claude --model claude-fable-5-1
+```
+
+Then:
+
+```
+Read transcript-runner.md and solution-register-model.md in full. Execute the transcript runner from stage T0 on the file in transcripts/input/. Stop at every checkpoint and wait for my approval.
+```
+
+The runner records its model at T0 and at the start of every later stage, and derives the mode from it (section 4). To force a mode regardless of model, say so in the instruction: "Run in strict mode." To resume after an interruption, give the same instruction; the runner reads `work/transcripts/state.md` and continues from the recorded stage, under whatever model the new session has, and records the change in the Audit table.
+
+To compare models, run T2 for the same session under each model in turn without approving the checkpoint, and compare the Audit rows and the `01-classified.md` files. Only one run is approved and carried into T3.
 
 ## Appendix. Worked examples
 
