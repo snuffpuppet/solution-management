@@ -17,7 +17,7 @@ Legacy steps that SMEs no longer perform become claims classed as legacy. The re
 ## 2. Deliverables
 
 1. `transcript-runner.md`: instructions for the runner, in the style of `solution-register-runner.md`, with numbered sections, operating rules, a checkpoint protocol, a work folder, staged phases and a classification guide for passages.
-2. Amendments to `solution-register-model.md`: the PRC item type and its relationships, entry point, register layout, outstanding view section and integrity rules.
+2. Amendments to `solution-register-model.md`: the PRC item type and its relationships, entry point, register layout, outstanding view section and integrity rules; and the reworked change request lifecycle.
 3. Amendments to `solution-register-runner.md`: transcript claims as an input, a classification step for process claims, and a note in section 9 on running the transcript runner first.
 4. An appendix in `transcript-runner.md` of worked classification examples.
 
@@ -78,6 +78,38 @@ Outstanding view gains a section: PRC in Draft older than 14 days.
 - I17 Process steps: every PRC step has a Retain value, and every Retain of No has a reason. Failure.
 - I3 extended: a PRC in Draft must have an open item in Links whose Owner is set.
 - I15 extended: PRC in Draft older than 14 days listed as a warning.
+
+### 3.6 Change request lifecycle (model 4.2, 4.4, 4.3, 5, 7, 8, 9)
+
+The change request type is reworked so that our own option design and stakeholder approval are visible states, a deferred change becomes a requirement for the named later phase, and a change that is not made but is answered with a workaround keeps its design.
+
+States, in order. Terminal states marked *.
+
+| State | Meaning | Required before leaving |
+|---|---|---|
+| Proposed | Raised. Reason says what the change buys. | Reason |
+| Options | We design the options. Each carries a one-line impact and a target phase. Defer to a later phase and accept a workaround are always valid options. | Options, at least two |
+| For approval | Options put to our stakeholders. | Consulted |
+| Approved | An option for delivery in this phase was chosen. | Chosen option, Approved by, Approved on, Phase |
+| Submitted | Handed to the vendor or the internal team. | Vendor ref when Implemented by is Vendor |
+| Delivered* | Built. The requirement it delivers moves. | |
+| Deferred* | The chosen option is delivery in a later phase. A requirement is created with Phase = that phase and MoSCoW set, and the CR carries "deferred as REQ-nnn". Any change needed when that phase starts raises a new CR. | Chosen option, Approved by, Approved on, Disposition record = REQ id |
+| Workaround accepted* | The change is not made. A decision records the manual process or workaround; where the workaround is a manual process it is also a PRC row. | Chosen option, Approved by, Approved on, Disposition record = DEC id |
+| Rejected* | No change and no workaround. The underlying need is Won't or Withdrawn. | Approved by, Approved on |
+
+Type-specific fields: Phase (named phase, set when an option is chosen), Raised on, Raised by, Reason, Options (numbered list, each `n. <option>; impact: <cost and time, or effort and who>; phase: <phase>`), Chosen option (number), Consulted, Approved by, Approved on, Disposition record (REQ id on Deferred, DEC id on Workaround accepted), CR page (optional link to the page holding the full option designs, as for Decision page). The single Impact field is removed; impact lives inside each option. Implemented by, Vendor ref and Source are unchanged. The row carries no Owner, Next action or Due; the driving open item does, and a CR in Proposed, Options, For approval or Submitted must have one in Links.
+
+Vendor impact assessment is no longer a state. A vendor estimate is an input to Options, and waiting for it is the driving open item's next action.
+
+Relationships added to model section 5: `CR deferred as REQ`, `CR dispositioned by DEC`, `REQ triggered by CR` (the reverse of "deferred as", written on either side).
+
+Register layout: Register: Change requests columns become ID, Title, Status, Phase, Reason, Options, Chosen option, Consulted, Approved by, Approved on, Disposition record, CR page, Implemented by, Raised on, Raised by, Scope, Vendor ref, Links, Source, Updated.
+
+Outstanding view section 4 becomes: change requests in Proposed, Options or For approval.
+
+Integrity rules: I2 updated so a CR has Reason once past Proposed, at least two Options once past Options, Consulted once past For approval, Chosen option and Phase once Approved or in a terminal state other than Rejected, and Vendor ref once Submitted with Implemented by = Vendor. I10 updated so Approved by and Approved on are required in Approved, Submitted, Delivered, Deferred, Workaround accepted and Rejected. New I18: every CR in Deferred has a Disposition record naming a REQ whose Phase is a later phase, and every CR in Workaround accepted has a Disposition record naming a DEC in Accepted. Failure.
+
+The "part of" relationship and the rule for a Both change split into two rows are unchanged.
 
 ## 4. Transcript claims
 
@@ -205,6 +237,7 @@ As register runner section 3: write the stage files, post a summary with counts 
 4. Section 5, Phase 1: coverage gaps now say which sessions have been ingested rather than that transcripts are absent.
 5. Section 7, target structure: Register: Processes row from 3.4.
 6. Section 9: note that transcript sessions are run with `transcript-runner.md` first, and that their claims land in `transcripts/claims/` or the graph for Phase 2 to read.
+7. Section 5, Phase 2, step 3 (status): a change request carrying a vendor number is at least Submitted; one described as having options or estimates under consideration is Options; one described as deferred or for a later release becomes Deferred with a question asking for the REQ to create, not a Phase change; one described as answered by a workaround or manual process becomes Workaround accepted with a question asking for the DEC. Step 4 (fields): Options are filled only from claim wording that names alternatives; otherwise blank with a question. Chosen option is filled only where the claim says which was chosen.
 
 ## 9. Error handling
 
