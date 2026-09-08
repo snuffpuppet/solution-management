@@ -30,4 +30,6 @@ need "5. **Present tense plus stated redundancy?**"
 need "## Appendix. Worked examples"
 need "| Legacy beats current |"
 need "| Split passage |"
+need "two statements of different classes"
+need "continue to step 7"
 exit $fail
