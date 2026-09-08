@@ -49,11 +49,11 @@ skipnote { next }
   if (match(line, /^<v[^>]*>/)) {
     spk = substr(line, 4, RLENGTH - 4)
     sub(/^<v[^>]*>/, "", line)
-    sub(/<\/v>[[:space:]]*$/, "", line)
-  } else if (match(line, /^[A-Za-z][A-Za-z0-9 ().-]*: /)) {
+  } else if (match(line, /^[^: <>][^:<>]*: /)) {
     spk = substr(line, 1, RLENGTH - 2)
     line = substr(line, RLENGTH + 1)
   }
+  sub(/<\/v>[[:space:]]*$/, "", line)
   if (spk == "") spk = (cuespk != "" ? cuespk : "Unattributed")
   cuespk = spk
   if (spk == pspk && cs - pend <= gap) {

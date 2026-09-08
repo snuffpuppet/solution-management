@@ -17,5 +17,11 @@ check "colon speaker form parsed" 'printf "%s\n" "$out" | grep -q "^- Speaker: M
 check "no speaker gives Unattributed" 'printf "%s\n" "$out" | grep -q "^- Speaker: Unattributed$"'
 check "v tags stripped" '! printf "%s\n" "$out" | grep -q "<v "'
 check "rejects non-vtt with exit 2" 'tools/vtt-to-passages.sh tools/fixtures/not-vtt.txt >/dev/null 2>&1; [ $? = 2 ]'
+fx2=tools/fixtures/edge.vtt
+out2=$(tools/vtt-to-passages.sh "$fx2")
+check "apostrophe speaker name parsed" 'printf "%s\n" "$out2" | grep -q "^- Speaker: O'"'"'Brien$"'
+check "non-ascii speaker name parsed" 'printf "%s\n" "$out2" | grep -q "^- Speaker: José$"'
+check "multiline v tag closes without leaking tag" 'printf "%s\n" "$out2" | grep -q "spans several lines before it closes." && ! printf "%s\n" "$out2" | grep -q "</v>"'
+check "edge fixture passage count" '[ "$(printf "%s\n" "$out2" | grep -c "^## Passage ")" = 3 ]'
 echo "$pass passed, $fail failed"
 [ "$fail" = 0 ]
