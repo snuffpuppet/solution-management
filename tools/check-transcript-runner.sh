@@ -53,4 +53,6 @@ need "**Self-check.**"
 need "| runner_model |"
 need "## 9. Running this runner"
 need "claude --model"
+
+need "grep -i -F \"<tag>\" transcripts/stakeholders.md"
 exit $fail
