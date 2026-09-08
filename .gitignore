@@ -1,3 +1,5 @@
 .DS_Store
 work/
-transcripts/input/
+transcripts/input/*
+!transcripts/input/.gitkeep
+.superpowers/
