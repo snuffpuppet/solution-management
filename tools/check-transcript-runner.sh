@@ -22,4 +22,12 @@ need '"source_kind": "transcript"'
 need "step-of"
 need "retain no;"
 need "## 7. Session summary"
+need "## 8. Classification guide for passages"
+need "1. **Consultant speaker?**"
+need "3. **Explicit past or cessation?**"
+need "4. **Commitment modal"
+need "5. **Present tense plus stated redundancy?**"
+need "## Appendix. Worked examples"
+need "| Legacy beats current |"
+need "| Split passage |"
 exit $fail

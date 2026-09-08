@@ -245,3 +245,40 @@ A process is one claim of class `current` naming the process and its trigger, pl
 7. **Open questions.** Count, and the question numbers still unanswered.
 
 Regenerate the summary whenever claims change at a checkpoint.
+
+## 8. Classification guide for passages
+
+Apply in this order to each passage. Stop at the first match. Record the step and the trigger words as the reason.
+
+1. **Consultant speaker?** Class `context`. Consultant passages never yield `current`, `current-not-needed`, `legacy` or `need`. Record the question so that the SME answer can carry `answers`.
+2. **Mixed passage?** A passage with both a description of work done today and a stated need, or both a legacy and a current statement, is split at the clause boundary into `(a)` and `(b)`. Each part continues from step 3. If you cannot find a clean boundary, class the whole passage with confidence `inferred` and ask.
+3. **Explicit past or cessation?** Wording such as "we used to", "before the migration", "that stopped when", "we no longer", "back when we had". Class `legacy`. Legacy beats current when the passage names a system or team that other passages in the session confirm is gone, even if the verb is present tense.
+4. **Commitment modal about the solution or the new way of working?** must, shall, has to, need to, will, should, could, may, will not, won't, out of scope. Class `need`. MoSCoW from the modal: must, shall, has to, need to, will give Must; should gives Should; could, may give Could; will not, won't, out of scope give Won't. Need beats current only when the modal is present. A need that keeps a current step carries `preserves`; one that changes a step carries `replaces`. "Need to check" and "need to find out" are open items, not needs; see step 7.
+5. **Present tense plus stated redundancy?** Wording such as "we still do this but", "nobody uses that", "we only do it because", "it is just habit", "pointless". Class `current-not-needed`. The step claim carries `retain no; <reason>`. No need is raised from it; a separate commitment about removing it is its own `need` under step 4.
+6. **Present tense description of work performed?** Wording such as "we do", "I check", "it goes to", "every month we", "then I". Class `current`. This is a step claim, or the process claim if it introduces the process.
+7. **Model entry points.** Decision: "we agreed", "we decided", "we went with", or an explicit unresolved disagreement; apply model 4.5 first, and a restated need is not a decision. Limitation: "we cannot because", "the system does not let us", "there is no way to". Risk: "the danger is", "if that happens", "we are worried that", "assumes". Open item: "someone needs to find out", "we need to check", "I will come back on that", "to be confirmed". Class accordingly.
+8. **Otherwise `context`.** Facts, volumes, roles, systems, frequencies, small talk. Context claims that name a system or frequency for a process carry `about`.
+
+Confidence is `extracted` when the trigger words are in the quote. It is `inferred` when you relied on surrounding passages, tone or your own judgement, and every inferred classification is a question.
+
+## Appendix. Worked examples
+
+Each row is one passage from an SME unless stated. The expected class and relations are what T2 and T3 must produce.
+
+| Case | Passage | Class | Relations and notes |
+|---|---|---|---|
+| Consultant question | "Can you walk me through how a new customer order comes in today?" (consultant) | context | The next SME claim carries `answers` to this one. |
+| Process introduction | "Sure. The order arrives by email from the sales team." | current | Process claim: "A new customer order is handled from the sales team's email." |
+| Current step | "I key it into the ledger and then copy the reference into the tracking spreadsheet." | current | Two step claims, `step-of` the process; step 1 ledger, step 2 spreadsheet. |
+| Current, not needed | "We still print a copy for the folder but nobody looks at it, it is just habit." | current-not-needed | Step 3, `retain no; nobody looks at it, it is just habit`. No need raised. |
+| Legacy | "We used to fax the confirmation to the depot but that stopped when the depot closed." | legacy | Listed in the summary. Never a step. |
+| Legacy beats current | "The confirmation goes over to the depot desk." where earlier passages establish the depot closed last year | legacy | Confidence inferred; question asks the human to confirm the depot desk is gone. |
+| Need, replaces | "It must pick the order up from email automatically" | need | MoSCoW Must, `replaces` the ledger step claim if that is the step it removes; otherwise `replaces` the process claim. |
+| Need, preserves | "we should keep the ledger entry because audit checks it" | need | MoSCoW Should, `preserves` the ledger step claim. |
+| Split passage | "It must pick the order up from email automatically, and we should keep the ledger entry because audit checks it." | need (a), need (b) | Split at "and". Part (a) as the replaces row above, part (b) as the preserves row. |
+| Open item, not need | "We need to check whether finance still wants the spreadsheet." | open-item | "need to check" is work, not a need. |
+| Unattributed | "That is something someone needs to find out." (no speaker tag) | open-item | Speaker Unattributed, role unknown; confidence extracted since the words are clear. |
+| Decision | "We agreed with finance last month that the spreadsheet is the master until go-live." | decision | Apply model 4.5: a real choice, so a decision claim. |
+| Limitation | "The ledger cannot hold more than one reference per order, so we keep the second one in the spreadsheet." | limitation | Also a current step for the spreadsheet if not already captured; ask rather than emit two claims from one passage. |
+| Risk | "If the sales inbox goes down we do not see orders at all." | risk | Trigger is the inbox outage. |
+| Context | "We get about two hundred orders a month." | context | `about` the process claim; fills Frequency or Systems in the PRC. |
