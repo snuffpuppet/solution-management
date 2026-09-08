@@ -39,4 +39,4 @@ Format: `YYYY-MM-DD | commit | kind | what | why`. Kind is `change` (something i
 | 2026-09-09 | 5d0cfbc | change | `work/` and `transcripts/input/` committed; T4 commits session records; runners 2.12 and 1.2; LOG gains Kind; HANDOVER.md; `tools/handover-check.sh` Stop hook; CLAUDE.md session checklists; ARCHITECTURE 1.2. | Traceability items 1 to 3. |
 | 2026-09-09 | f9e0ed6 | decision | Handover is user-controlled: a `/handover` skill and on-demand check, not a Stop hook. Hook stays available per user in settings.local.json. | Owner: the user keeps control of when to hand over. |
 | 2026-09-09 | b90106c | change | README: session start, handover and persistence added to the usage section. | Reflects the user-controlled handover workflow. |
-| 2026-09-09 | (this commit) | decision | Ignore `.obsidian/`. | Editor state, not project content. |
+| 2026-09-09 | 78614d4 | decision | Ignore `.obsidian/`. | Editor state, not project content. |
