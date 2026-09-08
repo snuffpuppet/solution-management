@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.1, 9 September 2026. Owner: Adam Moyes.
+Version 1.2, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -18,7 +18,7 @@ A set of playbook-style markdown documents, plus a few shell tools, for managing
 | Tools | `tools/` | Deterministic shell: the parser, the report script, their tests, and grep checks over the documents. |
 | Skills | `.claude/skills/` | Thin slash commands that launch a runner or a tool. They hold no rules of their own. |
 | Data | `transcripts/` | Input (ignored), processed transcripts and claims (committed). |
-| Working state | `work/` | Per-run state, questions, drafts and reports. Ignored by git. |
+| Working state | `work/` | Per-run state, questions, drafts, summaries and reports. Committed at every checkpoint; only `tmp/` subfolders are scratch. |
 
 ---
 
@@ -43,6 +43,8 @@ P8. **No new software on the host.** Tools use bash, awk, sed and grep. Anything
 P9. **Australian English, no em dashes, versioned documents.** Every document carries a version and date. The check scripts enforce the em dash rule.
 
 P10. **A check for every rule that matters.** When a document gains a rule another document or tool depends on, `tools/check-all.sh` gains an assertion for it in the same commit.
+
+P11. **Inputs and outputs are persisted.** Transcripts, claims, runner state, questions, answers, summaries and reports are committed. Only scratch is ignored. A file that a later session or a later reader would want is never in `.gitignore`.
 
 ---
 
@@ -147,7 +149,8 @@ Each runner keeps one state file in `work/`. On start it reads the file and resu
 
 Three records let a later reader reconstruct what happened and why:
 
-- `LOG.md`, a chronological record of changes to this project, one line per change with its commit.
+- `LOG.md`, a chronological record of changes, decisions and rulings, one line each with its commit.
+- `HANDOVER.md`, a transient statement of where the last session stopped, rewritten every session and enforced by a Stop hook (`tools/handover-check.sh`) that blocks ending a turn while work is uncommitted or the handover is behind.
 - The Audit table in `work/transcripts/state.md` and the `runner_model` and `runner_mode` fields on every claim, for what model did what.
 - The questions files and checkpoint decisions in the state files, for what the human decided.
 

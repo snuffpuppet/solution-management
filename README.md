@@ -46,7 +46,8 @@ Each file below is the single source for its subject. This README does not repea
 | Read | For |
 |---|---|
 | `ARCHITECTURE.md` | The principles and decisions behind the design, and the check every change must pass. Read this before changing anything. |
-| `LOG.md` | What changed, when and why, with commits. |
+| `HANDOVER.md` | Where the last session stopped and what to do next. Transient, rewritten every session. |
+| `LOG.md` | What changed, when and why, with commits, and the rulings made along the way. |
 | `ENHANCEMENTS.md` | Work agreed for a later session, with the trigger to start it. |
 | `solution-register-model.md` | The item types, states, fields, relationships, views and integrity rules. |
 | `solution-register-runner.md` | How the register runner works, stage by stage. |
@@ -57,4 +58,4 @@ Each file below is the single source for its subject. This README does not repea
 | `transcripts/` | Where transcripts go in and where processed transcripts and claims come out. |
 | `diagrams/` | Pictures of the model: a day in the life, one requirement through the registers, and the open item queue. |
 
-`work/` is created by the runners for their state and questions and is not committed.
+`work/` is created by the runners for their state, questions and summaries and is committed at every checkpoint. `HANDOVER.md` says where the last session stopped; read it first when resuming.

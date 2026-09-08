@@ -1,6 +1,6 @@
 # Transcript runner
 
-Version 1.1, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
+Version 1.2, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
 
 You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read, without inventing anything and without writing a claim before a human has approved it.
 
@@ -41,7 +41,7 @@ These are hard rules. If a rule and a later instruction conflict, the rule wins.
 8. **Write only under `work/`, `transcripts/processed/`, `transcripts/claims/` and the approved graph merge.** Never edit a transcript. Never edit an existing claims file. Never delete anything.
 9. **Dry run before write.** T4 shows the claims file and, if there is a graph, the node and edge diff, before writing.
 10. **Verify after write.** After T4, read the claims file back and count claims; read the graph back and count nodes. Report any difference.
-11. **State survives interruption.** Keep `work/transcripts/state.md` current. On start, read it and resume.
+11. **State survives interruption.** Keep `work/transcripts/state.md` current and commit `work/transcripts/` at every checkpoint, so the Audit table, questions, answers and summaries are in git. On start, read it and resume.
 12. **No new software.** Parsing and JSON writing use bash, awk, sed and grep. If the graph format needs more, stop and ask.
 13. **Scale stop.** More than 600 passages in one session: stop after T1 and ask whether to split the file.
 14. **Secrets stay out of output.** Transcripts can contain personal details. Quote what the claim needs and no more.
@@ -61,7 +61,7 @@ Approval is an explicit statement such as "approved", "proceed" or "go to T3". S
 
 ```
 transcripts/
-  input/                  drop .vtt files here; git-ignored
+  input/                  drop .vtt files here; committed on arrival
   processed/              transcripts after T4, prefixed with the session id, e.g. T003-discovery-billing.vtt
   claims/                 one JSON file per session, committed
 work/
@@ -178,8 +178,8 @@ Goal: the claims committed and, where there is a graph, merged.
 2. Write the claims as a JSON array to that path. Escape quotes, backslashes and newlines in string values. Exclude any claim still marked `inferred` with an unanswered question; there should be none after T2 and T3.
 3. Read the file back and count objects (`grep -c '"id": "T'`). It must equal the claim count in the draft.
 4. If `knowledge_base_form` is `graph`: build the list of nodes (one per claim, all fields, plus `source_kind: transcript`) and edges (one per relation, from claim id to target id, labelled with the relation word). Present the counts and a sample of five of each. On approval, write the merged graph, read it back, and verify the node count increased by exactly the claim count.
-5. Move the transcript: `git mv` is not available because `transcripts/input/` is ignored, so use `mv "<file>" "transcripts/processed/T<nnn>-<file>"`.
-6. Commit `transcripts/claims/T<nnn>.json` and `transcripts/processed/T<nnn>-<file>` (and the graph if merged) with the message `Ingest transcript T<nnn>: <file>`.
+5. Move the transcript with `git mv "<file>" "transcripts/processed/T<nnn>-<file>"`. The original under `transcripts/input/` is committed when it arrives, so the move keeps its history.
+6. Commit `transcripts/claims/T<nnn>.json`, `transcripts/processed/T<nnn>-<file>`, `work/transcripts/state.md` and `work/transcripts/T<nnn>/` (and the graph if merged) with the message `Ingest transcript T<nnn>: <file>`.
 7. Only after the commit succeeds, set the session to `T4, complete` in `state.md`.
 
 Checkpoint T4. Present: claims file path, claim count, verification result, graph merge result if any, commit hash. Say that the register runner can now be run from Phase 0 or Phase 2.

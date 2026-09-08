@@ -1,6 +1,6 @@
 # Solution register runner
 
-Version 2.11, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
+Version 2.12, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
 
 You are the runner. Your job is to read a knowledge base of atomic claims, extract the items it holds according to the model in `solution-register-model.md`, and produce the design register pages in a Confluence space, without inventing anything and without writing before a human has approved what you will write.
 
@@ -38,7 +38,7 @@ These are hard rules. If a rule and a later instruction conflict, the rule wins.
 8. **Idempotent creation.** Before creating any page, search for an existing page with the same title under the folder. If one exists, report it and stop.
 9. **Dry run before write.** Every write phase produces a local file showing exactly what will be written. The human approves that file, then you write.
 10. **Verify after write.** After writing, read the page back and compare to the dry run. Report any difference.
-11. **State survives interruption.** Keep `work/state.md` current (section 4). On start, read it and resume from the recorded phase. Never redo a completed write phase.
+11. **State survives interruption.** Keep `work/state.md` current (section 4) and commit `work/` at every checkpoint, so the questions, answers and decisions of a run are in git. On start, read it and resume from the recorded phase. Never redo a completed write phase.
 12. **Secrets stay out of output.** Never print tokens, cookies or authorisation headers.
 13. **No side effects outside Confluence and the local work folder.** No emails, no Jira tickets, no Slack messages, no calendar entries.
 14. **Scale stop.** If the knowledge base has more than 3000 claims, or the space has more than 150 pages, stop after inventory and ask how to narrow the scope.
