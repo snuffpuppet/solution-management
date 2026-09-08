@@ -1,22 +1,58 @@
 # Solution management
 
-Registers for tracking the artifacts of solution architecture on a vendor-delivered project: requirements, decisions, limitations, risks, open items, change requests and current business processes, from our perspective as design authority.
+## What this is
 
-| File | What it is |
+A way of keeping track of a solution design when a vendor builds most of it and we are the design authority. It tracks seven kinds of thing: requirements, decisions, limitations, risks, open items, change requests, and the business processes people follow today. Each kind lives in its own register, a table you can open in a meeting and see what is outstanding.
+
+Two AI runners, executed inside Claude Code with a human approving every stage, do the heavy lifting:
+
+- the **register runner** reads a knowledge base of claims and builds the registers in Confluence;
+- the **transcript runner** turns a recorded discovery session between consultants and our business experts into those claims.
+
+## Why it exists
+
+Design documents drift. Decisions get made in meetings and lost. Vendor limitations are discovered late and nobody records what was done about them. And when consultants interview business experts, the experts describe how things work today, how they used to work, and what they want, all in one breath. We want the current state captured faithfully, the wants captured as requirements, and the old ways left out of the requirements entirely.
+
+The registers give every item one home, one owner and one next action. The transcript runner makes sure what reaches them came from someone's words, with a quote to prove it, and that a human agreed before anything was written.
+
+## How to use it
+
+You need Claude Code and a checkout of this repository. Nothing else is installed.
+
+**Ingest a transcript.** Export the meeting from Teams or Webex as a `.vtt` file, then in Claude Code type:
+
+```
+/ingest-transcript path/to/meeting.vtt
+```
+
+The runner works through five stages and stops at the end of each one to show you what it found and ask for approval: who spoke and their roles, the passages and topics, how each passage was classified, the claims it assembled, and finally the write. Answer its questions and say "approved" to move on. Legacy practice is listed for you to see but never becomes a claim the registers will use.
+
+**Build or refresh the registers.** Once transcripts and design documents have been ingested into the knowledge base, launch Claude Code and give it the instruction at the end of `solution-register-runner.md`. It reads the knowledge base, proposes register items with their sources, asks you the questions it cannot answer, shows you a dry run, and only then writes to the Confluence design register folder.
+
+**See how ingestion is going.** Type:
+
+```
+/ingestion-report
+```
+
+It shows, per session and per model, how many questions the runner asked and how often you overturned its answer, so you can judge whether a given model is doing the job.
+
+**Maintain the registers by hand.** The rules for adding an item, closing an open item and running the weekly routine are in the model document, section 10. They take a few minutes per item.
+
+## Going deeper
+
+Each file below is the single source for its subject. This README does not repeat their content.
+
+| Read | For |
 |---|---|
-| `solution-register-model.md` | The model. Tool-agnostic: item types, states, relationships, scope, register layouts, the outstanding and next-phase views, integrity rules, maintenance routine. The single description of how the registers work. |
-| `solution-register-runner.md` | Instructions for Claude Opus 5 to read a knowledge base of atomic claims, extract items according to the model, and build the register pages in the Confluence design register folder, with read-only phases and hard checkpoints. |
-| `transcript-runner.md` | Instructions for Claude Opus 5 to turn a WebVTT discovery-session transcript into atomic claims for the register runner: passages, topics, a classification guide that keeps legacy practice out of the registers, and staged checkpoints. Run before the register runner. |
-| `tools/` | The WebVTT parser, the ingestion report script, their tests and fixtures, and grep checks that the model, runner and transcript runner documents still say what the checks expect. Run `tools/check-all.sh`. |
-| `ARCHITECTURE.md` | The principles and decisions every change is checked against, with the compliance procedure and approved deviations. Read first. |
-| `.claude/skills/` | Two slash commands: `/ingest-transcript <file.vtt>` starts the transcript runner on one file; `/ingestion-report` reports on ingestion effectiveness and the models that ran it. |
-| `transcripts/` | `input/` for new transcripts (not committed), `processed/` for ingested ones, `claims/` for the JSON claims each session produced. |
-| `diagrams/day-in-the-life.png` | Six things that happen on the project and how each runs through the registers. Start here. |
-| `diagrams/management-flow.png` | One requirement followed through the registers, with the open item queue across the top. |
-| `diagrams/artifact-workflow.png` | The open item queue, the records, and the limitation disposition paths. |
-| `diagrams/src/` | Generator for the day-in-the-life diagram. Edit the strip text and re-render. |
-| `work/` | Created by the runners. Intermediate results, questions, answers, session summaries and the migration log. Not committed. |
+| `ARCHITECTURE.md` | The principles and decisions behind the design, and the check every change must pass. Read this before changing anything. |
+| `solution-register-model.md` | The item types, states, fields, relationships, views and integrity rules. |
+| `solution-register-runner.md` | How the register runner works, stage by stage. |
+| `transcript-runner.md` | How the transcript runner works, its classification guide and worked examples. |
+| `docs/superpowers/specs/` | The design specification the transcript runner was built from. |
+| `tools/` | The parser, the report script, their tests, and `check-all.sh`, which verifies the documents still say what the tools expect. |
+| `.claude/skills/` | The two slash commands. They only launch the runners and tools. |
+| `transcripts/` | Where transcripts go in and where processed transcripts and claims come out. |
+| `diagrams/` | Pictures of the model: a day in the life, one requirement through the registers, and the open item queue. |
 
-Changes to the model go in the model file. Changes to how the runner works go in the runner file. Changes to how transcripts become claims go in the transcript runner file. The diagrams are re-rendered to match.
-
-Diagrams are hand-written SVG rendered to PNG with macOS tools only (`qlmanage` thumbnail of a square canvas, then `sips` centre crop).
+`work/` is created by the runners for their state and questions and is not committed.
