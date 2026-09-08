@@ -13,7 +13,7 @@ grep -qx 'transcripts/input/\*' .gitignore && echo "ok   input ignored" || { ech
 echo "== folders"
 for d in transcripts/input transcripts/processed transcripts/claims; do [ -f "$d/.gitkeep" ] && echo "ok   $d" || { echo "FAIL $d"; fail=1; }; done
 echo "== em dash scan"
-if grep -l -- '—' solution-register-model.md solution-register-runner.md transcript-runner.md README.md 2>/dev/null; then echo "FAIL em dash found"; fail=1; else echo "ok   no em dashes"; fi
+if grep -l -- '—' solution-register-model.md solution-register-runner.md transcript-runner.md README.md ARCHITECTURE.md CLAUDE.md .claude/skills/*/SKILL.md 2>/dev/null; then echo "FAIL em dash found"; fail=1; else echo "ok   no em dashes"; fi
 echo "== skills"
 for s in ingest-transcript ingestion-report; do grep -q "^name: $s$" ".claude/skills/$s/SKILL.md" 2>/dev/null && echo "ok   skill $s" || { echo "FAIL skill $s"; fail=1; }; done
 exit $fail
