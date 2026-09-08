@@ -40,3 +40,4 @@ Format: `YYYY-MM-DD | commit | kind | what | why`. Kind is `change` (something i
 | 2026-09-09 | f9e0ed6 | decision | Handover is user-controlled: a `/handover` skill and on-demand check, not a Stop hook. Hook stays available per user in settings.local.json. | Owner: the user keeps control of when to hand over. |
 | 2026-09-09 | b90106c | change | README: session start, handover and persistence added to the usage section. | Reflects the user-controlled handover workflow. |
 | 2026-09-09 | 78614d4 | decision | Ignore `.obsidian/`. | Editor state, not project content. |
+| 2026-09-09 | (this) | change | README 1.1: quickstart section at the top covering export, command, stages and their questions, and where output lands and why session ids cannot clash. | User asked for a quickstart first. |

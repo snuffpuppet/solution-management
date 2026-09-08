@@ -1,5 +1,39 @@
 # Solution management
 
+Version 1.1, 9 September 2026.
+
+## Quickstart
+
+1. Export the meeting from Teams or Webex as a `.vtt` file. The first line must be `WEBVTT`.
+2. Open Claude Code in this repository and run:
+
+   ```
+   /ingest-transcript path/to/meeting.vtt
+   ```
+
+   The file is copied into `transcripts/input/` unchanged. You can also drop it there yourself and give that path.
+
+3. Approve each stage as the runner stops for it. It asks "Approve stage Tn and proceed to Tn+1?" and waits; silence is not approval.
+
+   | Stage | What it does | What it asks you |
+   |---|---|---|
+   | T0 Register | Assigns the session id, reads the speakers, records the model | Confirm who spoke, their roles (consultant or SME), the meeting date, and the mode |
+   | T1 Passages | Splits the transcript into passages and groups them by topic | Rename or merge topics |
+   | T2 Classify | Gives every passage one class: current, legacy, need, context and so on | Answer every numbered question where it was unsure; it will not go on until all are answered |
+   | T3 Assemble | Turns classified passages into claims, with quotes, and links them to earlier sessions | Whether a process seen before is an update or a distinct process |
+   | T4 Write | Shows a dry run, writes the claims file, commits | Approve the dry run |
+
+4. Find the output under the session id. Each session gets `T` plus a three-digit number, one higher than any id already present in `work/transcripts/` or `transcripts/claims/`, so a new ingestion can never overwrite an earlier one. T4 also refuses to run if the claims file already exists.
+
+   | Path | Contents |
+   |---|---|
+   | `transcripts/claims/T<nnn>.json` | The claims, the file the register runner reads |
+   | `transcripts/processed/T<nnn>-meeting.vtt` | The transcript, moved out of `input/` with the id prefixed |
+   | `work/transcripts/T<nnn>/` | Passages, classifications, the claims draft, your questions and answers, and the session summary |
+   | `work/transcripts/state.md` | The session table and audit rows across every ingestion |
+
+Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
+
 ## What this is
 
 A way of keeping track of a solution design when a vendor builds most of it and we are the design authority. It tracks seven kinds of thing: requirements, decisions, limitations, risks, open items, change requests, and the business processes people follow today. Each kind lives in its own register, a table you can open in a meeting and see what is outstanding.
@@ -27,13 +61,7 @@ Read HANDOVER.md and continue from its next action.
 
 The handover file says where the last session stopped. The agent also checks that nothing is uncommitted and that the document checks pass before it starts. If a runner was left mid-stage, it tells you and resumes from that stage rather than starting again.
 
-**Ingest a transcript.** Export the meeting from Teams or Webex as a `.vtt` file, then in Claude Code type:
-
-```
-/ingest-transcript path/to/meeting.vtt
-```
-
-The runner works through five stages and stops at the end of each one to show you what it found and ask for approval: who spoke and their roles, the passages and topics, how each passage was classified, the claims it assembled, and finally the write. Answer its questions and say "approved" to move on. Legacy practice is listed for you to see but never becomes a claim the registers will use.
+**Ingest a transcript.** See the quickstart above. Legacy practice is listed for you to see but never becomes a claim the registers will use.
 
 **Build or refresh the registers.** Once transcripts and design documents have been ingested into the knowledge base, launch Claude Code and give it the instruction at the end of `solution-register-runner.md`. It reads the knowledge base, proposes register items with their sources, asks you the questions it cannot answer, shows you a dry run, and only then writes to the Confluence design register folder.
 
