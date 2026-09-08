@@ -1,36 +1,32 @@
 # Solution management
 
-Version 1.1, 9 September 2026.
+Version 1.2, 9 September 2026.
 
 ## Quickstart
 
 1. Export the meeting from Teams or Webex as a `.vtt` file. The first line must be `WEBVTT`.
-2. Open Claude Code in this repository and run:
-
-   ```
-   /ingest-transcript path/to/meeting.vtt
-   ```
-
-   The file is copied into `transcripts/input/` unchanged. You can also drop it there yourself and give that path.
-
+2. Open Claude Code in this repository and run `/ingest-transcript path/to/meeting.vtt`. The file is copied into `transcripts/input/` unchanged. You can also drop it there yourself and give that path.
 3. Approve each stage as the runner stops for it. It asks "Approve stage Tn and proceed to Tn+1?" and waits; silence is not approval.
+4. Find the output under the session id, listed below.
 
-   | Stage | What it does | What it asks you |
-   |---|---|---|
-   | T0 Register | Assigns the session id, reads the speakers, records the model | Confirm who spoke, their roles (consultant or SME), the meeting date, and the mode |
-   | T1 Passages | Splits the transcript into passages and groups them by topic | Rename or merge topics |
-   | T2 Classify | Gives every passage one class: current, legacy, need, context and so on | Answer every numbered question where it was unsure; it will not go on until all are answered |
-   | T3 Assemble | Turns classified passages into claims, with quotes, and links them to earlier sessions | Whether a process seen before is an update or a distinct process |
-   | T4 Write | Shows a dry run, writes the claims file, commits | Approve the dry run |
+The stages and what each asks you:
 
-4. Find the output under the session id. Each session gets `T` plus a three-digit number, one higher than any id already present in `work/transcripts/` or `transcripts/claims/`, so a new ingestion can never overwrite an earlier one. T4 also refuses to run if the claims file already exists.
+| Stage | What it does | What it asks you |
+|---|---|---|
+| T0 Register | Assigns the session id, reads the speakers, records the model | Confirm who spoke, their roles (consultant or SME), the meeting date, and the mode |
+| T1 Passages | Splits the transcript into passages and groups them by topic | Rename or merge topics |
+| T2 Classify | Gives every passage one class: current, legacy, need, context and so on | Answer every numbered question where it was unsure; it will not go on until all are answered |
+| T3 Assemble | Turns classified passages into claims, with quotes, and links them to earlier sessions | Whether a process seen before is an update or a distinct process |
+| T4 Write | Shows a dry run, writes the claims file, commits | Approve the dry run |
 
-   | Path | Contents |
-   |---|---|
-   | `transcripts/claims/T<nnn>.json` | The claims, the file the register runner reads |
-   | `transcripts/processed/T<nnn>-meeting.vtt` | The transcript, moved out of `input/` with the id prefixed |
-   | `work/transcripts/T<nnn>/` | Passages, classifications, the claims draft, your questions and answers, and the session summary |
-   | `work/transcripts/state.md` | The session table and audit rows across every ingestion |
+Each session gets `T` plus a three-digit number, one higher than any id already present in `work/transcripts/` or `transcripts/claims/`, so a new ingestion can never overwrite an earlier one. T4 also refuses to run if the claims file already exists.
+
+| Path | Contents |
+|---|---|
+| `transcripts/claims/T<nnn>.json` | The claims, the file the register runner reads |
+| `transcripts/processed/T<nnn>-meeting.vtt` | The transcript, moved out of `input/` with the id prefixed |
+| `work/transcripts/T<nnn>/` | Passages, classifications, the claims draft, your questions and answers, and the session summary |
+| `work/transcripts/state.md` | The session table and audit rows across every ingestion |
 
 Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
 
