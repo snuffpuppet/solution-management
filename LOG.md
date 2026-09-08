@@ -41,4 +41,4 @@ Format: `YYYY-MM-DD | commit | kind | what | why`. Kind is `change` (something i
 | 2026-09-09 | b90106c | change | README: session start, handover and persistence added to the usage section. | Reflects the user-controlled handover workflow. |
 | 2026-09-09 | 78614d4 | decision | Ignore `.obsidian/`. | Editor state, not project content. |
 | 2026-09-09 | 1cd099b | change | README 1.1: quickstart section at the top covering export, command, stages and their questions, and where output lands and why session ids cannot clash. | User asked for a quickstart first. |
-| 2026-09-09 | (this) | change | README 1.2: quickstart tables moved out of the numbered list so Obsidian renders them. | Tables nested in list items do not render in Obsidian. |
+| 2026-09-09 | a581428 | change | README 1.2: quickstart tables moved out of the numbered list so Obsidian renders them. | Tables nested in list items do not render in Obsidian. |
