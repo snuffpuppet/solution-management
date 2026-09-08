@@ -1,0 +1,4 @@
+[
+  {"id": "T002-C001", "class": "current", "confidence": "extracted", "runner_model": "claude-fable-5-1", "runner_mode": "standard", "source_kind": "transcript"},
+  {"id": "T002-C002", "class": "need", "confidence": "extracted", "runner_model": "claude-fable-5-1", "runner_mode": "standard", "source_kind": "transcript"}
+]

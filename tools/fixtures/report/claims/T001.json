@@ -1,0 +1,5 @@
+[
+  {"id": "T001-C001", "class": "current", "confidence": "extracted", "runner_model": "claude-opus-5", "runner_mode": "strict", "source_kind": "transcript"},
+  {"id": "T001-C002", "class": "legacy", "confidence": "extracted", "runner_model": "claude-opus-5", "runner_mode": "strict", "source_kind": "transcript"},
+  {"id": "T001-C003", "class": "need", "confidence": "inferred", "runner_model": "claude-opus-5", "runner_mode": "strict", "source_kind": "transcript"}
+]

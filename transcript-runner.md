@@ -116,13 +116,13 @@ Goal: identify the session, confirm the file is a transcript, and learn who spok
 2. List `transcripts/input/`. If more than one file, ask which to process. Assign the next session id.
 3. Confirm the first line of the file is `WEBVTT`, ignoring a byte order mark if present (the parser strips it). If not, stop and report; do not move the file.
 4. Record the file name and the meeting date. Take the date from the file name if it holds one in ISO or dd-mm-yyyy form; otherwise ask.
-5. List every distinct speaker tag with its cue count, using:
+5. List every distinct speaker tag with its passage count (the parser merges consecutive same-speaker cues), using:
 
    ```
    tools/vtt-to-passages.sh "<file>" | grep '^- Speaker:' | sort | uniq -c | sort -rn
    ```
 
-   Count cues with no tag as Unattributed.
+   Passages with no tag appear as Unattributed.
 6. Ask the human to give each tag a role, consultant or SME, and a person's name where the tag is a room or the human knows who spoke. Record the mapping in `state.md` under checkpoint decisions. Where a tag is not a person at all, for example a short word that happened to precede a colon in the transcript, the human marks it as not a speaker and its passages are treated as Unattributed.
 7. If `state.md` does not record the knowledge base location and form, ask, then record it.
 8. Record the model you are running as, taken from your own session context (the model id, for example `claude-opus-5` or `claude-fable-5-1`), in the session row's Model column. Derive Mode: standard for Fable, strict for any other model. Present both at the checkpoint; the human may override the mode.
