@@ -103,13 +103,12 @@ Goal: identify the session, confirm the file is a transcript, and learn who spok
 
 1. Read `work/transcripts/state.md` if it exists. If a session is not complete, resume it at its recorded stage and skip the rest of T0.
 2. List `transcripts/input/`. If more than one file, ask which to process. Assign the next session id.
-3. Confirm the first line of the file is `WEBVTT`. If not, stop and report; do not move the file.
+3. Confirm the first line of the file is `WEBVTT`, ignoring a byte order mark if present (the parser strips it). If not, stop and report; do not move the file.
 4. Record the file name and the meeting date. Take the date from the file name if it holds one in ISO or dd-mm-yyyy form; otherwise ask.
 5. List every distinct speaker tag with its cue count, using:
 
    ```
-   tr -d '\r' < "<file>" | grep -o '^<v [^>]*>' | sort | uniq -c | sort -rn
-   tr -d '\r' < "<file>" | grep -oE '^[A-Za-z][A-Za-z0-9 ().-]*: ' | sort | uniq -c | sort -rn
+   tools/vtt-to-passages.sh "<file>" | grep '^- Speaker:' | sort | uniq -c | sort -rn
    ```
 
    Count cues with no tag as Unattributed.
@@ -145,7 +144,7 @@ Checkpoint T2. Present: counts per class, the questions. Ask the human to answer
 
 Goal: the claims for this session, grouped into processes and linked.
 
-1. For each classified passage or split part, write one claim with the fields in section 6. `statement` is one sentence in the SME's words, tidied only for grammar. `quote` is the verbatim passage text.
+1. For each classified passage or split part, write one claim with the fields in section 6. One claim per statement in the part: a sentence that names two steps gives two step claims. `statement` is one sentence in the SME's words, tidied only for grammar. `quote` is the verbatim passage text. Set moscow on need claims from the modal as section 8 step 4 says.
 2. Group claims of class `current` and `current-not-needed` into processes. Use topic, speaker and passage order as hints. For each group write one process claim: class `current`, statement naming the process and what triggers it, quote taken from the passage that introduces it. Each step claim carries `step-of <process claim id>; step n` in passage order. A `current-not-needed` step claim also carries `retain no; <reason in the SME's words>`.
 3. Claims of class `context` that state a system, tool or frequency for a process carry `about <process claim id>`.
 4. Each SME claim that answers a consultant question carries `answers <consultant claim id>`.
@@ -181,12 +180,13 @@ One JSON object per claim, in a top-level array, one file per session.
 | quote | Verbatim passage text. Mandatory. |
 | session | Session id. |
 | file | Transcript file name as it was in `transcripts/input/`. |
-| passage | Passage number as a string, with `(a)` or `(b)` when split, e.g. `"12(b)"`. |
+| passage | Passage number as a string, with a letter suffix when split, e.g. `"12(b)"`. |
 | timestamp | Start of the passage, `HH:MM:SS.mmm`. |
 | speaker | Mapped person name, or "Unattributed". |
 | role | `consultant`, `sme` or `unknown`. |
 | topic | Topic label from T1. |
 | class | `current`, `current-not-needed`, `legacy`, `need`, `decision`, `limitation`, `risk`, `open-item` or `context`. |
+| moscow | On need claims only: Must, Should, Could or Won't, from the step 4 table. Absent on other classes. |
 | confidence | `extracted` or `inferred`. |
 | relations | Array of strings, each `<relation> <target claim id>` with optional `; <detail>`. Relations: `step-of <id>; step n`, `retain no; <reason>`, `replaces <id>`, `preserves <id>`, `answers <id>`, `about <id>`, `same-as <id>`. |
 | source_kind | Always `"transcript"`. |
@@ -251,9 +251,9 @@ Regenerate the summary whenever claims change at a checkpoint.
 Apply in this order to each passage. Stop at the first match. Record the step and the trigger words as the reason.
 
 1. **Consultant speaker?** Class `context`. Consultant passages never yield `current`, `current-not-needed`, `legacy` or `need`. Record the question so that the SME answer can carry `answers`.
-2. **Mixed passage?** A passage that contains two statements of different classes, or two commitment-modal statements with different MoSCoW values, is split at the clause boundary into `(a)` and `(b)`. Typical mixes are a description of work done today with a stated need, a legacy statement with a current one, a limitation with the current step that works around it, and a Must beside a Should. Each part continues from step 3. If you cannot find a clean boundary, class the whole passage with confidence `inferred` and ask.
+2. **Mixed passage?** A passage that contains two statements of different classes, or two commitment-modal statements with different MoSCoW values, is split at sentence or clause boundaries into as many lettered parts as there are statements, `(a)`, `(b)`, `(c)` and so on. Typical mixes are a description of work done today with a stated need, a legacy statement with a current one, a limitation with the current step that works around it, and a Must beside a Should. Each part continues from step 3. If you cannot find a clean boundary, class the whole passage with confidence `inferred` and ask.
 3. **Explicit past or cessation?** Wording such as "we used to", "before the migration", "that stopped when", "we no longer", "back when we had". Class `legacy`. Legacy beats current when the passage names a system or team that other passages in the session confirm is gone, even if the verb is present tense.
-4. **Commitment modal about the solution or the new way of working?** must, shall, has to, need to, will, should, could, may, will not, won't, out of scope. Class `need`. MoSCoW from the modal: must, shall, has to, need to, will give Must; should gives Should; could, may give Could; will not, won't, out of scope give Won't. Need beats current only when the modal is present. A need that keeps a current step carries `preserves`; one that changes a step carries `replaces`. "Need to check" and "need to find out" are open items, not needs; see step 7.
+4. **Commitment modal about the solution or the new way of working?** must, shall, has to, need to, will, should, could, may, will not, won't, out of scope. Class `need`. MoSCoW from the modal: must, shall, has to, need to, will give Must; should gives Should; could, may give Could; will not, won't, out of scope give Won't. The modal must be about the solution or the new way of working. A modal that states an obligation within today's process, such as "the invoice has to go to finance before I key it" or "we need to get sign-off before we post it", is a current step under step 6, not a need. Where the subject of the modal is unclear, class the passage with confidence inferred and ask. Need beats current only when the modal is present. A need that keeps a current step carries `preserves`; one that changes a step carries `replaces`. "Need to check" and "need to find out" are open items, not needs; see step 7.
 5. **Present tense plus stated redundancy?** Wording such as "we still do this but", "nobody uses that", "we only do it because", "it is just habit", "pointless". Class `current-not-needed`. The step claim carries `retain no; <reason>`. No need is raised from it; a separate commitment about removing it is its own `need` under step 4.
 6. **Present tense description of work performed?** Wording such as "we do this", "I check", "it goes to", "every month we", "then I". Class `current`. This is a step claim, or the process claim if it introduces the process. A negated or conditional clause such as "we do not" or "if that happens" is not a description of work performed; continue to step 7.
 7. **Model entry points.** Decision: "we agreed", "we decided", "we went with", or an explicit unresolved disagreement; apply model 4.5 first, and a restated need is not a decision. Limitation: "we cannot because", "the system does not let us", "there is no way to". Risk: "the danger is", "if that happens", "we are worried that", "assumes". Open item: "someone needs to find out", "we need to check", "I will come back on that", "to be confirmed". Class accordingly.
@@ -275,6 +275,7 @@ Each row is one passage from an SME unless stated. The expected class and relati
 | Legacy beats current | "The confirmation goes over to the depot desk." where earlier passages establish the depot closed last year | legacy | Confidence inferred; question asks the human to confirm the depot desk is gone. |
 | Need, replaces | "It must pick the order up from email automatically" | need | MoSCoW Must, `replaces` the ledger step claim if that is the step it removes; otherwise `replaces` the process claim. |
 | Need, preserves | "we should keep the ledger entry because audit checks it" | need | MoSCoW Should, `preserves` the ledger step claim. |
+| Obligation inside today's process | "The invoice has to go to finance before I key it." | current | "has to" is about today's process, not the solution; step claim, Retain: Yes. |
 | Split passage | "It must pick the order up from email automatically, and we should keep the ledger entry because audit checks it." | need (a), need (b) | Split at "and". Part (a) as the replaces row above, part (b) as the preserves row. |
 | Open item, not need | "We need to check whether finance still wants the spreadsheet." | open-item | "need to check" is work, not a need. |
 | Unattributed | "That is something someone needs to find out." (no speaker tag) | open-item | Speaker Unattributed, role unknown; confidence extracted since the words are clear. |
@@ -282,3 +283,4 @@ Each row is one passage from an SME unless stated. The expected class and relati
 | Limitation | "The ledger cannot hold more than one reference per order, so we keep the second one in the spreadsheet." | limitation | Also a current step for the spreadsheet if not already captured; ask rather than emit two claims from one passage. |
 | Risk | "If the sales inbox goes down we do not see orders at all." | risk | Trigger is the inbox outage. |
 | Context | "We get about two hundred orders a month." | context | `about` the process claim; fills Frequency or Systems in the PRC. |
+| Merged multi-sentence passage | "Sure. The order arrives by email from the sales team. I key it into the ledger and then copy the reference into the tracking spreadsheet. We still print a copy for the folder but nobody looks at it, it is just habit." | current (a), current (b), current (c), current-not-needed (d) | Split at sentence boundaries; (a) is the process claim, (b) and (c) are step claims for the ledger and the spreadsheet, (d) is step 3 with `retain no; nobody looks at it, it is just habit`. |

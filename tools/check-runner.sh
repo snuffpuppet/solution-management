@@ -14,4 +14,6 @@ need "| Register: Processes |"
 need "transcript-runner.md"
 need "transcript claims by class"
 absent "at least Submitted. A change request or requirement described as deferred or for a later release gets Phase = next phase"
+need "moscow field fills MoSCoW"
+need "Confirm PRC-pnnn"
 exit $fail

@@ -22,6 +22,16 @@ out2=$(tools/vtt-to-passages.sh "$fx2")
 check "apostrophe speaker name parsed" 'printf "%s\n" "$out2" | grep -q "^- Speaker: O'"'"'Brien$"'
 check "non-ascii speaker name parsed" 'printf "%s\n" "$out2" | grep -q "^- Speaker: José$"'
 check "multiline v tag closes without leaking tag" 'printf "%s\n" "$out2" | grep -q "spans several lines before it closes." && ! printf "%s\n" "$out2" | grep -q "</v>"'
-check "edge fixture passage count" '[ "$(printf "%s\n" "$out2" | grep -c "^## Passage ")" = 3 ]'
+check "edge fixture passage count" '[ "$(printf "%s\n" "$out2" | grep -c "^## Passage ")" = 4 ]'
+check "NOTE inside cue body reaches passage list" 'printf "%s\n" "$out2" | grep -q "NOTE this must reach the passage list"'
+fx3=tools/fixtures/bom.vtt
+out3=$(tools/vtt-to-passages.sh "$fx3")
+bomstatus=$?
+check "bom fixture accepted with exit 0" '[ "$bomstatus" = 0 ]'
+check "bom fixture passage count" '[ "$(printf "%s\n" "$out3" | grep -c "^## Passage ")" = 4 ]'
+shortvtt="$(mktemp -d)/short.vtt"
+printf 'WEBVTT\n\n00:05.000 --> 00:07.000\nSpeaker: hello there\n' > "$shortvtt"
+out4=$(tools/vtt-to-passages.sh "$shortvtt")
+check "timestamp without hours normalised" 'printf "%s\n" "$out4" | grep -q "^- Time: 00:00:05.000$"'
 echo "$pass passed, $fail failed"
 [ "$fail" = 0 ]
