@@ -1,7 +1,7 @@
 # Handover
 
 Updated: 2026-09-09
-Last commit: d2101d4
+Last commit: 499a35e
 
 ## In flight
 Nothing. No runner session has been started; work/transcripts/ does not exist yet.
