@@ -1,6 +1,6 @@
 # Solution management
 
-Version 1.2, 9 September 2026.
+Version 1.3, 9 September 2026.
 
 ## Quickstart
 
@@ -29,6 +29,25 @@ Each session gets `T` plus a three-digit number, one higher than any id already 
 | `work/transcripts/state.md` | The session table and audit rows across every ingestion |
 
 Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
+
+### Then build the registers
+
+Claims are not yet requirements. The register runner reads every claims file, plus any design documents in the knowledge base, and turns them into register items: requirements (REQ), decisions (DEC), limitations (LIM), risks (RSK), open items (OI), change requests (CR), and the existing business processes the experts described (PRC). Start Claude Code with the Opus 5 model and give it:
+
+```
+Read solution-register-runner.md and solution-register-model.md in full. Execute the runner from Phase 0. The knowledge base is at transcripts/claims/. Stop at every checkpoint and wait for my approval.
+```
+
+| Phase | What it does | What it asks you |
+|---|---|---|
+| Phase 0 Preflight | Checks Confluence access and finds the design register folder | Confirm the space, the folder, the page title prefix and id numbering |
+| Phase 1 Inventory | Counts claims by source and lists what Confluence already holds | Which sources or pages to exclude |
+| Phase 2 Extract | Proposes one candidate item per claim, with type, relations and scope | Answer its questions: unclear types, duplicate pairs, who implements each item |
+| Phase 3 Build | Shows a dry run of every register page, then writes them | Approve the dry run; accept or fix integrity failures such as items with no owner |
+| Phase 4 Reconcile | Proposes edits to the source pages that tables came from | Yes or no per page |
+| Phase 5 Handover | Summarises what was written and what is left to fill by hand | Nothing |
+
+Nothing is written to Confluence before Phase 3, and only inside the design register folder. A SME claim classified `current` at T2 becomes a PRC row with its steps; a `need` becomes a REQ; a `legacy` claim never reaches a register. Its working files live in `work/`, beside the transcript runner's, and are committed at each checkpoint in the same way.
 
 ## What this is
 
