@@ -1,16 +1,17 @@
 # Handover
 
 Updated: 2026-09-09
-Last commit: 78614d4
+Last commit: 0bf85eb
 
 ## In flight
 Nothing. No runner session has been started; work/transcripts/ does not exist yet.
 
 ## Next action
-Run the first real transcript through `/ingest-transcript` under Opus 5 and review the T2 questions.
+Run the first real transcript through `/ingest-transcript` under Opus 5; T0 will fill `transcripts/stakeholders.md` for the first time.
 
 ## Blocked
 Nothing
 
 ## Notes for the next session
+Speaker roles are now sme, consultant, vendor, architect (runner 1.4, guide step 1a). Expertise column stays blank (E12).
 Main is local only (E9). The knowledge base form is discovered at T0 until pinned (E6).
