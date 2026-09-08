@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.0, 9 September 2026. Owner: Adam Moyes.
+Version 1.1, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -83,7 +83,77 @@ Model and runner share a version line; the transcript runner has its own. A chan
 
 ---
 
-## 4. Compliance check
+## 4. Pipeline and runbook design
+
+This section describes the shape of the pipeline: what flows between which parts, where the human sits, and what survives interruption. The stage-by-stage instructions live in the runner documents and are not repeated here.
+
+### 4.1 Flow
+
+```
+transcripts/input/*.vtt
+      |
+      v
+[Transcript runner]  T0 register -> T1 passages -> T2 classify -> T3 assemble -> T4 write
+      |                                                                      |
+      |  work/transcripts/T<nnn>/ (passages, classifications, questions, summary)
+      v
+transcripts/claims/T<nnn>.json  (claims with class, relations, model, mode)
+      |
+      v
+[Knowledge base]  claims folder, or a graph file the claims are merged into
+      |
+      v
+[Register runner]  Phase 0 preflight -> 1 inventory -> 2 classify and extract -> 3 build -> 4 reconcile -> 5 handover
+      |
+      v
+Confluence design register folder: seven registers, taxonomy, conventions, outstanding and next-phase views
+```
+
+Design documents enter the knowledge base by a separate ingestion outside this repository. Transcripts enter through the transcript runner. Both meet at the claim.
+
+### 4.2 Runbook shape
+
+Every runner document has the same skeleton, and a new runner must keep it:
+
+1. **Inputs and outputs.** What it reads, what it writes, and nothing else.
+2. **Operating rules.** Hard rules that win over any later instruction: read-only phases, never invent, never delete, dry run before write, verify after write, state survives interruption, no new software, a scale stop.
+3. **Checkpoint protocol.** Write the stage files, post a summary with counts and questions, ask the fixed approval question, update state, end the turn.
+4. **Work folder.** A state file plus one folder per unit of work, with numbered files per stage.
+5. **Stages.** Each with a goal, numbered steps, and a checkpoint that names what to present.
+6. **A record format.** The claim record for the transcript runner; the register columns, from the model, for the register runner.
+7. **A classification guide.** Ordered steps, stop at the first match, record the reason. Worked examples in an appendix.
+8. **Running this runner.** The launch command and the resume instruction.
+
+### 4.3 Human gates
+
+| Gate | What the human sees | What approval releases |
+|---|---|---|
+| T0 | Speakers, roles, meeting date, model and mode | Parsing |
+| T1 | Passage count, cue check, topics | Classification |
+| T2 | Counts per class, every inferred classification as a question | Claim assembly, once every question is answered |
+| T3 | Claims table, processes with Retain flags, legacy list, summary | The write |
+| T4 | Claims file, graph diff if any | Commit and move |
+| Register Phase 2 | Candidate items, questions, scope taxonomy | Building pages |
+| Register Phase 3a | Dry run of every page | Writing to Confluence |
+| Register Phase 4 | Each source page edit, individually | That one edit |
+
+No stage writes outside the work folder before its gate. The questions list is how doubt reaches the human; a runner never resolves doubt by guessing.
+
+### 4.4 State and resumption
+
+Each runner keeps one state file in `work/`. On start it reads the file and resumes the first incomplete unit at its recorded stage. Stage advances are written only after the commit or write that the stage produces has succeeded, so a failure leaves the unit at the earlier stage and the next run repeats the write rather than skipping it. The transcript runner's state file also holds the Audit table (Decision D6).
+
+### 4.5 Auditability
+
+Three records let a later reader reconstruct what happened and why:
+
+- `LOG.md`, a chronological record of changes to this project, one line per change with its commit.
+- The Audit table in `work/transcripts/state.md` and the `runner_model` and `runner_mode` fields on every claim, for what model did what.
+- The questions files and checkpoint decisions in the state files, for what the human decided.
+
+`ENHANCEMENTS.md` holds work agreed for a later session. An entry there is not a commitment; it is a place to keep the idea and its rationale so the next session does not rediscover it.
+
+## 5. Compliance check
 
 Before creating, moving, renaming or deleting a file, adding a tool, changing a runner stage, changing a classification rule, or changing an item type, state, field or relationship:
 
@@ -106,6 +176,6 @@ Layer placement, for the file location question: rules about items go in the mod
 
 ---
 
-## 5. Deviations
+## 6. Deviations
 
 None recorded.

@@ -46,6 +46,8 @@ Each file below is the single source for its subject. This README does not repea
 | Read | For |
 |---|---|
 | `ARCHITECTURE.md` | The principles and decisions behind the design, and the check every change must pass. Read this before changing anything. |
+| `LOG.md` | What changed, when and why, with commits. |
+| `ENHANCEMENTS.md` | Work agreed for a later session, with the trigger to start it. |
 | `solution-register-model.md` | The item types, states, fields, relationships, views and integrity rules. |
 | `solution-register-runner.md` | How the register runner works, stage by stage. |
 | `transcript-runner.md` | How the transcript runner works, its classification guide and worked examples. |
