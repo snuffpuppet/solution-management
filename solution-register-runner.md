@@ -1,6 +1,6 @@
 # Solution register runner
 
-Version 2.10, 7 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
+Version 2.11, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
 
 You are the runner. Your job is to read a knowledge base of atomic claims, extract the items it holds according to the model in `solution-register-model.md`, and produce the design register pages in a Confluence space, without inventing anything and without writing before a human has approved what you will write.
 
@@ -14,7 +14,7 @@ Start at Phase 0. Do not skip checkpoints.
 
 Inputs:
 
-- **The knowledge base.** A set of atomic claims built by ingesting design documents. Some claims hold existing requirements. Most describe the design as documented. Meeting transcripts have generally not been ingested, so decisions made verbally, open items raised in meetings and their owners will be under-represented. Do not compensate for that by guessing; report the gap (Phase 1).
+- **The knowledge base.** A set of atomic claims built by ingesting design documents and, where `transcript-runner.md` has been run, discovery-session transcripts. Transcript claims are identified by `source_kind: transcript` on the claim, or by living under `transcripts/claims/`, and carry a `class` field that section 6 steps 0 and 0a use directly. Sessions that have not been ingested leave decisions made verbally, open items raised in meetings and their owners under-represented. Do not compensate for that by guessing; report which sessions are ingested and which are not (Phase 1).
 - **The Confluence space.** The solution design space, reached through the Atlassian MCP tools. Read for context and existing register-like pages. Write only to the design register folder.
 - **The model.** `solution-register-model.md`.
 
@@ -68,7 +68,7 @@ work/
   01-inventory.md       Phase 1: claim counts, sources represented, existing requirement claims, register-like Confluence pages, coverage gaps
   02-candidates.md      Phase 2: candidate items, one per row, with claim ids and provisional id
   02-questions.md       Phase 2: numbered questions needing a human answer
-  02-mapping.md         Phase 2: claim to candidate mapping, including claims that produced no item and why
+  02-mapping.md         Phase 2: claim to candidate mapping, including claims that produced no item and why, and a count of transcript claims by class
   03-dryrun/            Phase 3: one file per page to be created, exact content
   03-migration-log.md   Phase 3: what was written, page ids, verification result, provisional to final id map
   04-reconcile.md       Phase 4: per-page proposed superseded notes and approvals
@@ -116,7 +116,7 @@ Goal: know what the knowledge base and the space contain before classifying anyt
 3. Identify claims whose source is a table in a design document, as opposed to prose. Tables are the most likely places existing tracking lives; note the table's page and header row where the provenance gives it.
 4. Identify relation types between claims if the knowledge base has them, and note which ones look like rationale, dependency or reference.
 5. List the Confluence pages in the space with id, title, parent and last modified. Classify each as solution design document, register-like page, meeting notes or other. Note which design documents are represented in the knowledge base and which are not.
-6. Record coverage gaps: design documents in Confluence not in the knowledge base; item types the knowledge base is unlikely to hold well because transcripts were not ingested (open items, meeting decisions, owners, due dates).
+6. Record coverage gaps: design documents in Confluence not in the knowledge base; which transcript sessions under `transcripts/claims/` are present and which known sessions are not, and the item types that suffer when sessions are missing (open items, meeting decisions, owners, due dates).
 7. Write `01-inventory.md`.
 
 Checkpoint 1. Present: claim counts by source, existing requirement claims and id schemes, table-sourced claims, Confluence page counts by class, coverage gaps. Ask which sources or pages, if any, to exclude. Ask "Approve Phase 1 and proceed to Phase 2?"
@@ -127,8 +127,8 @@ Goal: turn claims into candidate register items with sources and questions. Read
 
 1. Classify every claim as one of: candidate item of a given type; part of an item already identified from another claim; narrative with no item; or unclear. Record the classification and the reason in `02-mapping.md`. "Narrative with no item" is the expected majority outcome; do not force claims into items.
 2. For each candidate item fill every model header field you can from the claims, and the type-specific fields. Give it a provisional id (type prefix plus a sequence, e.g. `LIM-p017`). Source is the claim id or ids plus the claim's own provenance (document, section or page). Where an existing requirement id exists, keep it in Source as "previously R-12" and record it in the id map. Open items have no Source column: put the claim id and provenance in `02-mapping.md` and the migration log, set Raised by to the person if the claim names one and otherwise to the source document title, and set Raised on from a date in the claim or the document.
-3. Status. Map any status wording in the claim to the model's vocabulary. Where no status is present, use the earliest non-terminal state for the type (Draft, Proposed, Identified, Open) and add a question only if the claim's wording suggests a later state. A change request that carries a vendor number is at least Submitted. A change request or requirement described as deferred or for a later release gets Phase = next phase, not a terminal state.
-4. Owner, Raised by, Approved by. Fill them only when a claim names a person. Team names and role names leave the field blank and generate one question per distinct group, not per item. On decisions, a document author or a "decided by" phrase fills Raised by or Approved by; Decided on comes from a date in the claim or its source document and is otherwise blank. On requirements, Raised on comes from a date in the claim or, failing that, the source document's date, and the mapping file says which. Identified on for limitations and risks is filled the same way. Trigger on a risk is filled only from wording in the claim that names an observable event; otherwise blank with a question. Raised on and Raised by on a change request, and Raised by on a risk, follow the open item rule. Reason on a change request is filled only from claim wording that says what the change is for; otherwise blank with a question. Impact on a limitation is filled only from wording in the claim or an adjacent claim from the same source; never written by you from general knowledge, and left blank with a question otherwise. Expect these to be blank on most items; that is the transcript gap, and the human fills it later.
+3. Status. Map any status wording in the claim to the model's vocabulary. Where no status is present, use the earliest non-terminal state for the type (Draft, Proposed, Identified, Open) and add a question only if the claim's wording suggests a later state. A change request that carries a vendor number is at least Submitted. One described as having options or estimates under consideration is Options. One described as deferred or for a later release becomes Deferred with a question asking for the REQ to create as its disposition; a requirement described that way gets Phase = next phase. One described as answered by a workaround or manual process becomes Workaround accepted with a question asking for the DEC.
+4. Owner, Raised by, Approved by. Fill them only when a claim names a person. Team names and role names leave the field blank and generate one question per distinct group, not per item. On decisions, a document author or a "decided by" phrase fills Raised by or Approved by; Decided on comes from a date in the claim or its source document and is otherwise blank. On requirements, Raised on comes from a date in the claim or, failing that, the source document's date, and the mapping file says which. Identified on for limitations and risks is filled the same way. Trigger on a risk is filled only from wording in the claim that names an observable event; otherwise blank with a question. Raised on and Raised by on a change request, and Raised by on a risk, follow the open item rule. Reason on a change request is filled only from claim wording that says what the change is for; otherwise blank with a question. Options on a change request are filled only from claim wording that names alternatives with their impact; otherwise blank with a question. Chosen option is filled only where the claim says which option was chosen. Impact on a limitation is filled only from wording in the claim or an adjacent claim from the same source; never written by you from general knowledge, and left blank with a question otherwise. Expect these to be blank on most items; that is the transcript gap, and the human fills it later.
 5. MoSCoW on requirements. Fill from the claim if it carries a priority. Otherwise leave blank and add one question per source document listing the requirements that need a value.
 6. Implemented by. Infer Vendor when the source is a vendor design document and Internal when it is ours, mark the inference in `02-mapping.md`, and list every inference for confirmation at the checkpoint.
 7. Links. Where the knowledge base relates claims, and both claims became candidates, record the link with the model's relationship words (model section 5). A rationale relation from a claim that became a DEC to a claim that became a REQ is "addresses". A claim that became a LIM whose source discusses a REQ is "constrains". Mitigation on a risk is text on the row, not a link. Unresolvable references go in the questions list.
@@ -182,6 +182,10 @@ Write `05-handover.md` with: links to every register page, the outstanding page 
 
 Apply in this order to each claim. Stop at the first match. Record the reason.
 
+0. **Transcript claim of class legacy or context?** Narrative. Never an item. A legacy claim is listed in `02-mapping.md` with the reason "legacy practice" so the discard is traceable.
+0a. **Transcript claim of class current or current-not-needed?** Candidate PRC. One PRC per process claim. Its step claims (those carrying `step-of` this process) become the Steps field in `step n` order, with Retain: Yes unless the step claim carries `retain no; <reason>`, in which case Retain: No and the reason. Actor comes from the step claim's wording where it names one. Raised by is the speaker names on the claims; Described on is the session date; Source lists the claim ids. Context claims with an `about` relation to the process fill Systems and Frequency. A process claim with a `same-as` relation to an earlier session's process claim is an update to that PRC candidate, not a new one; record it and add a question.
+0b. **Transcript claim of class need, decision, limitation, risk or open-item?** Continue at the step below that matches the class, using the class as the starting proposal. A need claim carrying `replaces` or `preserves` gives the REQ a Links entry "replaces PRC-pnnn/step n" or "preserves PRC-pnnn/step n" once both sides have provisional ids.
+
 1. **Is it an existing requirement claim, or does it state a need?** Wording such as "must", "shall", "needs to", "is required to", or a requirement id. Candidate REQ. Owner is the person who stated it if the claim says who; otherwise blank.
 2. **Does it record a choice between options, a principle other design must follow, or an accepted constraint?** Wording such as "we chose", "instead of", "will use X rather than Y", "must always", "because the platform requires". Candidate DEC. Apply model 4.5: a claim that merely restates a requirement or describes routine vendor implementation is narrative, not a decision.
 3. **Does it say the solution will not do, or does differently, something needed?** Wording such as "does not support", "is limited to", "cannot", "only one", "not available in this phase". Candidate LIM. If the claim also names the need, that need is a REQ candidate if not already present, and the LIM constrains it.
@@ -206,16 +210,17 @@ All pages live directly under the design register folder. Titles use the confirm
 | Register: Risks | Table with the Risks columns |
 | Register: Open items | Table with the Open items columns |
 | Register: Change requests | Table with the Change requests columns |
+| Register: Processes | Table with the Processes columns |
 | Register: Scope taxonomy | The scope tree (model section 6) as a nested list. The allowed Scope values. |
 | Register: Conventions | Model sections 2 to 5 and 8, condensed for people adding items by hand. |
-| Register: Outstanding | The meeting view (model section 8). A hand-maintained page with six headed sections, regenerated by the runner on request. |
+| Register: Outstanding | The meeting view (model section 8). A hand-maintained page with seven headed sections, regenerated by the runner on request. |
 | Register: Next phase | The next-phase view (model section 8): deferred limitations with their disposition requirement, next-phase requirements, next-phase change requests. Regenerated with the outstanding page. |
 
 Each register page carries the labels `solution-register` and `register-<type>` (e.g. `register-limitations`). Each page starts with a two-line note: what the register holds and a link to Register: Conventions.
 
 ## 8. Maintenance runs
 
-When asked to "run the register routine": read the six register pages, regenerate Register: Outstanding and Register: Next phase using model section 8, run the integrity rules and report failures and warnings. This is read-only except for those two pages, which are inside the folder and need no per-page approval; report the diff.
+When asked to "run the register routine": read the seven register pages, regenerate Register: Outstanding and Register: Next phase using model section 8, run the integrity rules and report failures and warnings. This is read-only except for those two pages, which are inside the folder and need no per-page approval; report the diff.
 
 ## 9. Running this runner
 
@@ -232,6 +237,8 @@ Read solution-register-runner.md and solution-register-model.md in full. Execute
 ```
 
 To resume after an interruption, give the same instruction. The runner reads `work/state.md` and continues from the recorded phase.
+
+Transcript sessions are ingested first with `transcript-runner.md`. Its claims land in `transcripts/claims/` or in the knowledge base graph, and Phase 2 reads them like any other claim.
 
 To run maintenance only:
 
