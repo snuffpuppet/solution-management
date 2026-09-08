@@ -23,4 +23,4 @@ Format: `YYYY-MM-DD | commit | what | why`
 | 2026-09-09 | 96e3feb | Skills /ingest-transcript and /ingestion-report, report script. | Launchers only; the report script makes the numbers deterministic. Each skill tested by a live subagent run. |
 | 2026-09-09 | 26520a2 | ARCHITECTURE.md 1.0 and project CLAUDE.md. | Principles P1 to P10, decisions D1 to D9 including D7 (no subagent orchestration in the runners), compliance check. |
 | 2026-09-09 | 44edd3a | README rewritten for newcomers. | What, why, how; the deeper table points at single sources and repeats nothing. |
-| 2026-09-09 | (this commit) | ARCHITECTURE.md 1.1 pipeline and runbook design; LOG.md; ENHANCEMENTS.md. | Traceability and a home for deferred work. |
+| 2026-09-09 | 8ac4b61 | ARCHITECTURE.md 1.1 pipeline and runbook design; LOG.md; ENHANCEMENTS.md. | Traceability and a home for deferred work. |
