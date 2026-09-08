@@ -29,7 +29,7 @@ out3=$(tools/vtt-to-passages.sh "$fx3")
 bomstatus=$?
 check "bom fixture accepted with exit 0" '[ "$bomstatus" = 0 ]'
 check "bom fixture passage count" '[ "$(printf "%s\n" "$out3" | grep -c "^## Passage ")" = 4 ]'
-shortvtt="$(mktemp -d)/short.vtt"
+shortvtt="$(mktemp -d "${TMPDIR:-/tmp}/vtt-test.XXXXXX")/short.vtt"
 printf 'WEBVTT\n\n00:05.000 --> 00:07.000\nSpeaker: hello there\n' > "$shortvtt"
 out4=$(tools/vtt-to-passages.sh "$shortvtt")
 check "timestamp without hours normalised" 'printf "%s\n" "$out4" | grep -q "^- Time: 00:00:05.000$"'
