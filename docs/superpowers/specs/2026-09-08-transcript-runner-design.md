@@ -127,7 +127,7 @@ One claim per atomic statement. Fields:
 | passage | Passage number, with `(a)` or `(b)` when split. |
 | timestamp | Start of the passage. |
 | speaker | Cue speaker name, or "Unattributed". |
-| role | consultant or sme, from the T0 mapping. |
+| role | consultant, sme or unknown, from the T0 mapping; unknown for Unattributed passages. |
 | topic | Topic label. |
 | class | One of: current, current-not-needed, legacy, need, decision, limitation, risk, open-item, context. |
 | confidence | extracted or inferred. Inferred means the class or a relation was the runner's judgement rather than the passage's wording. |
