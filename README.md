@@ -54,7 +54,7 @@ Each file below is the single source for its subject. This README does not repea
 | `transcript-runner.md` | How the transcript runner works, its classification guide and worked examples. |
 | `docs/superpowers/specs/` | The design specification the transcript runner was built from. |
 | `tools/` | The parser, the report script, their tests, and `check-all.sh`, which verifies the documents still say what the tools expect. |
-| `.claude/skills/` | The two slash commands. They only launch the runners and tools. |
+| `.claude/skills/` | The slash commands: ingest a transcript, report on ingestion, hand over a session. They only launch the runners and tools. |
 | `transcripts/` | Where transcripts go in and where processed transcripts and claims come out. |
 | `diagrams/` | Pictures of the model: a day in the life, one requirement through the registers, and the open item queue. |
 

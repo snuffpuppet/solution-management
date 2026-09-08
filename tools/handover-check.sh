@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code Stop hook. Blocks ending the turn when HANDOVER.md is behind the work.
+# Handover check. Run by the handover skill, by hand, or optionally as a Claude Code Stop hook.
 # Passes when: the working tree has no uncommitted tracked changes, and the commit
 # recorded in HANDOVER.md equals the latest commit that touched anything other than
 # HANDOVER.md and LOG.md. Exit 2 blocks the stop and the message on stderr reaches the agent.

@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.2, 9 September 2026. Owner: Adam Moyes.
+Version 1.3, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -150,7 +150,7 @@ Each runner keeps one state file in `work/`. On start it reads the file and resu
 Three records let a later reader reconstruct what happened and why:
 
 - `LOG.md`, a chronological record of changes, decisions and rulings, one line each with its commit.
-- `HANDOVER.md`, a transient statement of where the last session stopped, rewritten every session and enforced by a Stop hook (`tools/handover-check.sh`) that blocks ending a turn while work is uncommitted or the handover is behind.
+- `HANDOVER.md`, a transient statement of where the last session stopped, rewritten by the `handover` skill when the user ends a session and verified by `tools/handover-check.sh`. Enforcement as a Stop hook is optional and per user.
 - The Audit table in `work/transcripts/state.md` and the `runner_model` and `runner_mode` fields on every claim, for what model did what.
 - The questions files and checkpoint decisions in the state files, for what the human decided.
 

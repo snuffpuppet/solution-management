@@ -15,7 +15,7 @@ for d in transcripts/input transcripts/processed transcripts/claims; do [ -f "$d
 echo "== em dash scan"
 if grep -l -- '—' solution-register-model.md solution-register-runner.md transcript-runner.md README.md ARCHITECTURE.md CLAUDE.md LOG.md ENHANCEMENTS.md HANDOVER.md .claude/skills/*/SKILL.md 2>/dev/null; then echo "FAIL em dash found"; fail=1; else echo "ok   no em dashes"; fi
 echo "== skills"
-for s in ingest-transcript ingestion-report; do grep -q "^name: $s$" ".claude/skills/$s/SKILL.md" 2>/dev/null && echo "ok   skill $s" || { echo "FAIL skill $s"; fail=1; }; done
+for s in ingest-transcript ingestion-report handover; do grep -q "^name: $s$" ".claude/skills/$s/SKILL.md" 2>/dev/null && echo "ok   skill $s" || { echo "FAIL skill $s"; fail=1; }; done
 echo "== handover"
 for h in "^Updated: " "^Last commit: " "^## In flight" "^## Next action" "^## Blocked" "^## Notes for the next session"; do
   grep -q "$h" HANDOVER.md && echo "ok   $h" || { echo "FAIL $h"; fail=1; }

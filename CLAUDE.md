@@ -14,9 +14,13 @@ Read `ARCHITECTURE.md`: creating, moving, renaming or deleting files, adding a t
 
 Run `tools/check-all.sh` first. It must be all ok. Append a line to `LOG.md` with Kind `change`, `decision` or `ruling`. A ruling is a judgement call made on the user's behalf; log it when you make it, not later. Record deferred work in `ENHANCEMENTS.md` rather than leaving it in conversation.
 
-## Before ending the session
+## Ending a session
 
-Rewrite `HANDOVER.md` from the template below, replacing every section; it is transient and must not grow. Then commit. A Stop hook (`tools/handover-check.sh`) blocks ending the turn while uncommitted changes exist or the handover is behind the latest work commit.
+When the user says they are leaving, asks for a handover or handoff, or types `/handover`, run the `handover` skill. It rewrites `HANDOVER.md` from the template below, replacing every section so the file stays transient, commits, and verifies with `tools/handover-check.sh`. The check is on demand, not automatic; a user who wants it enforced can add it as a Stop hook in `.claude/settings.local.json`:
+
+```
+{"hooks":{"Stop":[{"hooks":[{"type":"command","command":"tools/handover-check.sh"}]}]}}
+```
 
 ```
 # Handover
