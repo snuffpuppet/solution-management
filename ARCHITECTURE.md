@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.3, 9 September 2026. Owner: Adam Moyes.
+Version 1.4, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -45,6 +45,8 @@ P9. **Australian English, no em dashes, versioned documents.** Every document ca
 P10. **A check for every rule that matters.** When a document gains a rule another document or tool depends on, `tools/check-all.sh` gains an assertion for it in the same commit.
 
 P11. **Inputs and outputs are persisted.** Transcripts, claims, runner state, questions, answers, summaries and reports are committed. Only scratch is ignored. A file that a later session or a later reader would want is never in `.gitignore`.
+
+P12. **Fewer questions over time, never at the cost of quality.** The human's effort per session should fall as the runners learn, but quality of output outranks question count. Two measures decide, in this order: the rate at which the human overturns a runner's proposal, then the number of questions per hundred passages. A runner document is edited to ask less only when the Audit table shows the change did not raise the overturn rate. Findings come from a learning pass that reads each question and its answer and states what rule, evidence in the source, or human judgement settled it; a finding is a proposal the human approves into the document (P1, P2, P10), never a rule the runner applies to itself. Checkpoints stay as P3 states them; this principle reduces doubt inside a stage, not the gates between stages.
 
 ---
 
