@@ -14,4 +14,3 @@ Nothing
 
 ## Notes for the next session
 Main is local only (E9). The knowledge base form is discovered at T0 until pinned (E6).
-`.obsidian/` is untracked; the owner should say whether to ignore it or commit it.
