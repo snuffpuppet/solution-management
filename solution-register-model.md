@@ -196,7 +196,7 @@ The meeting view is:
 6. Requirements in Draft older than 14 days, measured from Raised on.
 7. Processes in Draft older than 14 days, measured from Described on.
 
-Items with Phase = next phase are excluded from this view. They appear on a separate next-phase view instead:
+Items with Phase = next phase, and change requests in Deferred, are excluded from this view. They appear on a separate next-phase view instead:
 
 1. Limitations in Deferred, with their disposition requirement.
 2. Requirements with Phase = next phase.

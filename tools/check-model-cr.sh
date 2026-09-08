@@ -15,4 +15,5 @@ need "4. Change requests in Proposed, Options or For approval."
 need "| I18 Change request disposition |"
 absent "Impact assessment"
 absent "Deferring a change request is a change of Phase"
+need "and change requests in Deferred, are excluded from this view"
 exit $fail
