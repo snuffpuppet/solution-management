@@ -1,6 +1,6 @@
 # Transcript runner
 
-Version 1.2, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
+Version 1.3, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
 
 You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read, without inventing anything and without writing a claim before a human has approved it.
 
@@ -89,16 +89,16 @@ last_update: <ISO date>
 
 ## Audit
 
-| Session | Stage | Model | Mode | Date | Passages | Claims | Questions raised | Class changed by human |
-|---|---|---|---|---|---|---|---|---|
-| T001 | T2 | claude-opus-5 | strict | 2026-09-16 | 212 | | 31 | 9 |
-| T001 | T3 | claude-opus-5 | strict | 2026-09-16 | 212 | 187 | 4 | 1 |
+| Session | Stage | Model | Mode | Runner | Date | Passages | Claims | Questions raised | Class changed by human |
+|---|---|---|---|---|---|---|---|---|---|
+| T001 | T2 | claude-opus-5 | strict | 1.2 | 2026-09-16 | 212 | | 31 | 9 |
+| T001 | T3 | claude-opus-5 | strict | 1.2 | 2026-09-16 | 212 | 187 | 4 | 1 |
 
 checkpoint_decisions:
   - <date> T002: <decision the human made, verbatim where short>
 ```
 
-Model and Mode on the session row are the model that ran T0 and the mode chosen there. The Audit table has one row per stage run, so a session whose stages ran under different models shows each. Questions raised is the count of questions the stage produced; Class changed by human is how many of those answers overturned the runner's proposed class. Comparing those two columns across models is how the effect of a model change is measured.
+Model and Mode on the session row are the model that ran T0 and the mode chosen there. The Audit table has one row per stage run, so a session whose stages ran under different models shows each. Questions raised is the count of questions the stage produced; Class changed by human is how many of those answers overturned the runner's proposed class. Runner is the version number from this document's version line, for example `1.3`, read at the start of the stage. Comparing questions raised and classes changed across models is how the effect of a model change is measured; comparing them across Runner values is how the effect of an edit to this document is measured (ARCHITECTURE P12).
 
 Mode is `standard` or `strict`. It is derived from the model at T0, standard for Fable and strict for every other model, and the human may override it at the T0 checkpoint. Strict mode changes only T2, as described there.
 
@@ -129,7 +129,7 @@ Goal: identify the session, confirm the file is a transcript, and learn who spok
 
 Checkpoint T0. Present: session id, file, meeting date, speaker table with roles, knowledge base location, model and mode. Ask "Approve stage T0 and proceed to T1?"
 
-Every later stage, on starting, records its own model in a new Audit row for that stage. If the model differs from the session row, say so at the checkpoint.
+Every later stage, on starting, records its own model and the version number from this document's version line in a new Audit row for that stage. If the model differs from the session row, say so at the checkpoint.
 
 ### T1. Passages and topics
 

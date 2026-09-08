@@ -27,26 +27,26 @@ echo
 
 echo "## Audit rows"
 echo
-echo "| Session | Stage | Model | Mode | Date | Passages | Claims | Questions raised | Class changed by human |"
-echo "|---|---|---|---|---|---|---|---|---|"
+echo "| Session | Stage | Model | Mode | Runner | Date | Passages | Claims | Questions raised | Class changed by human |"
+echo "|---|---|---|---|---|---|---|---|---|---|"
 audit=$(awk '/^## Audit/ { on = 1; next } /^## / { on = 0 } on && /^\| T[0-9][0-9][0-9] \|/' "$state")
 printf '%s\n' "$audit"
 echo
 
 echo "## By model"
 echo
-echo "Change rate is classes changed by the human divided by questions raised. A lower rate means the model's proposed classes survived review more often. Questions per passage shows how much the model asked."
+echo "Change rate is classes changed by the human divided by questions raised. A lower rate means the model's proposed classes survived review more often. Questions per passage shows how much the model asked. Rows are per model, mode and runner document version, so an edit to the runner document shows as a new row to compare against the old one."
 echo
-echo "| Model | Mode | Sessions | Passages | Questions raised | Class changed by human | Change rate | Questions per 100 passages |"
-echo "|---|---|---|---|---|---|---|---|"
+echo "| Model | Mode | Runner | Sessions | Passages | Questions raised | Class changed by human | Change rate | Questions per 100 passages |"
+echo "|---|---|---|---|---|---|---|---|---|"
 printf '%s\n' "$audit" | awk -F'|' '
 {
-  gsub(/^ +| +$/, "", $4); gsub(/^ +| +$/, "", $5); gsub(/^ +| +$/, "", $2)
-  key = $4 "|" $5
+  gsub(/^ +| +$/, "", $4); gsub(/^ +| +$/, "", $5); gsub(/^ +| +$/, "", $6); gsub(/^ +| +$/, "", $2)
+  key = $4 "|" $5 "|" $6
   if (!(key in seen)) { order[++n] = key; seen[key] = 1 }
   sess[key, $2] = 1
-  if ($3 ~ /T2/) pass[key] += $7
-  q[key] += $9; ch[key] += $10
+  if ($3 ~ /T2/) pass[key] += $8
+  q[key] += $10; ch[key] += $11
 }
 END {
   for (i = 1; i <= n; i++) {
@@ -54,7 +54,7 @@ END {
     s = 0; for (x in sess) { split(x, y, SUBSEP); if (y[1] == k) s++ }
     rate = (q[k] > 0) ? sprintf("%.1f%%", 100 * ch[k] / q[k]) : "n/a"
     per = (pass[k] > 0) ? sprintf("%.1f", 100 * q[k] / pass[k]) : "n/a"
-    printf "| %s | %s | %d | %d | %d | %d | %s | %s |\n", m[1], m[2], s, pass[k], q[k], ch[k], rate, per
+    printf "| %s | %s | %s | %d | %d | %d | %d | %s | %s |\n", m[1], m[2], m[3], s, pass[k], q[k], ch[k], rate, per
   }
 }'
 echo

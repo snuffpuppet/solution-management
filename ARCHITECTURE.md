@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.4, 9 September 2026. Owner: Adam Moyes.
+Version 1.5, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -68,7 +68,7 @@ Current practice is recorded as PRC rows, one per end-to-end process with number
 Proposed, Options, For approval, Approved, Submitted, Delivered, or terminal Deferred (becomes a requirement for a named later phase), Workaround accepted (a decision records the workaround, and a manual workaround is also a process), or Rejected. Impact lives inside each option. Vendor estimates are inputs, not states.
 
 ### D6. The runner records its model and derives a mode
-At T0 and at every later stage the transcript runner writes its model id to the state file. Mode is standard for Fable and strict for every other model, overridable by the human. Only T2 differs by mode: strict mode downgrades more classifications to inferred. Each claim carries `runner_model` and `runner_mode`. The Audit table's questions raised and classes changed columns are the measure of a model's effect.
+At T0 and at every later stage the transcript runner writes its model id to the state file. Mode is standard for Fable and strict for every other model, overridable by the human. Only T2 differs by mode: strict mode downgrades more classifications to inferred. Each claim carries `runner_model` and `runner_mode`. The Audit table's questions raised and classes changed columns are the measure of a model's effect. Each Audit row also carries the runner document version, so the same columns measure the effect of a document edit (P12).
 
 ### D7. No subagent orchestration inside the runners
 Assessed 9 September 2026. The cost of ingestion sits in T2 and T3, which are also where quality is at risk. Delegating T2 to a cheaper model with a stronger checker does not pay: the failure mode is a confident misclassification the weak model never flags, so the checker must re-read every passage, which is the same work as classifying. Splitting T2 across parallel subagents loses whole-session context that the guide's rules depend on (legacy beats current, consultant question framing, topic continuity, same-as matching), and T3 grouping needs the whole session by definition. T0, T1 and T4 are shell work where a cheaper model saves nothing worth having.
