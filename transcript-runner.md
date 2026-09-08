@@ -92,3 +92,156 @@ checkpoint_decisions:
 ```
 
 Session ids are `T` plus a zero-padded three-digit number, assigned from the highest existing id in `work/transcripts/` and `transcripts/claims/` plus one. Claim ids are `T<nnn>-C<nnn>` and number from 001 within a session.
+
+## 5. Phases
+
+Each stage ends at a checkpoint (section 3). Stage files go in `work/transcripts/T<nnn>/`.
+
+### T0. Register
+
+Goal: identify the session, confirm the file is a transcript, and learn who spoke.
+
+1. Read `work/transcripts/state.md` if it exists. If a session is not complete, resume it at its recorded stage and skip the rest of T0.
+2. List `transcripts/input/`. If more than one file, ask which to process. Assign the next session id.
+3. Confirm the first line of the file is `WEBVTT`. If not, stop and report; do not move the file.
+4. Record the file name and the meeting date. Take the date from the file name if it holds one in ISO or dd-mm-yyyy form; otherwise ask.
+5. List every distinct speaker tag with its cue count, using:
+
+   ```
+   tr -d '\r' < "<file>" | grep -o '^<v [^>]*>' | sort | uniq -c | sort -rn
+   tr -d '\r' < "<file>" | grep -oE '^[A-Za-z][A-Za-z0-9 ().-]*: ' | sort | uniq -c | sort -rn
+   ```
+
+   Count cues with no tag as Unattributed.
+6. Ask the human to give each tag a role, consultant or SME, and a person's name where the tag is a room or the human knows who spoke. Record the mapping in `state.md` under checkpoint decisions. Where a tag is not a person at all, for example a short word that happened to precede a colon in the transcript, the human marks it as not a speaker and its passages are treated as Unattributed.
+7. If `state.md` does not record the knowledge base location and form, ask, then record it.
+
+Checkpoint T0. Present: session id, file, meeting date, speaker table with roles, knowledge base location. Ask "Approve stage T0 and proceed to T1?"
+
+### T1. Passages and topics
+
+Goal: a numbered passage list with no cue lost, and a topic label on every passage.
+
+1. Run `tools/vtt-to-passages.sh "<file>" > work/transcripts/T<nnn>/00-passages.md`.
+2. Read the last line of the output. Verify: the cue count equals `grep -c -- '-->' "<file>"`, and the last timestamp equals the start of the last cue in the file. If either differs, stop and report.
+3. Apply the speaker mapping from T0: replace each mapped tag in the `- Speaker:` lines with the person's name, and add `- Role: consultant` or `- Role: sme` after each speaker line. Unattributed passages get `- Role: unknown`.
+4. Read every passage. Propose a topic list: a short name per subject discussed, with the passage numbers it covers. A subject that returns later reuses its name. A digression gets its own name. Write the topic name into each passage's `- Topic:` line.
+5. Apply the scale stop: if there are more than 600 passages, stop and ask whether to split the file.
+
+Checkpoint T1. Present: passage count, cue count check, unattributed share, the topic list with passage ranges. Ask the human to rename or merge topics. Ask "Approve stage T1 and proceed to T2?"
+
+### T2. Classify
+
+Goal: one class per passage, with reasons, and every doubt turned into a question.
+
+1. Apply section 8 to every passage in order. Where step 2 of the guide applies, split the passage into `(a)` and `(b)` and class each part.
+2. Write `01-classified.md` as a table: Passage, Speaker, Role, Class, Confidence, Reason, Notes. Reason is the guide step that matched and the words that triggered it.
+3. Every passage with confidence `inferred` becomes a numbered question in `02-questions.md`: the passage number, the quote, the proposed class, the alternative, and what would settle it.
+4. Present counts per class.
+
+Checkpoint T2. Present: counts per class, the questions. Ask the human to answer them. When every question has an answer, apply the answers, regenerate `01-classified.md`, present the final counts, and ask "Approve stage T2 and proceed to T3?" Do not proceed while any question from this stage is unanswered.
+
+### T3. Assemble claims
+
+Goal: the claims for this session, grouped into processes and linked.
+
+1. For each classified passage or split part, write one claim with the fields in section 6. `statement` is one sentence in the SME's words, tidied only for grammar. `quote` is the verbatim passage text.
+2. Group claims of class `current` and `current-not-needed` into processes. Use topic, speaker and passage order as hints. For each group write one process claim: class `current`, statement naming the process and what triggers it, quote taken from the passage that introduces it. Each step claim carries `step-of <process claim id>; step n` in passage order. A `current-not-needed` step claim also carries `retain no; <reason in the SME's words>`.
+3. Claims of class `context` that state a system, tool or frequency for a process carry `about <process claim id>`.
+4. Each SME claim that answers a consultant question carries `answers <consultant claim id>`.
+5. Each `need` claim that keeps a current step carries `preserves <step claim id>`; one that changes a step carries `replaces <step claim id>`.
+6. Read every earlier `transcripts/claims/*.json`. Where a new process claim describes the same process as an earlier one (same trigger and the same or overlapping steps), add `same-as <earlier claim id>` and a question asking whether this is an update or a distinct process. The register runner folds a same-as claim into the existing PRC candidate while no PRC row has been published; once a row exists, it proposes a new PRC and marks the old one Superseded, as model 4.4 requires.
+7. Write `02-claims-draft.md`: a table with Id, Passage, Speaker, Class, Confidence, Statement, Relations. Below it, list legacy claims with quote and speaker.
+8. Write `03-summary.md` (section 7).
+
+Checkpoint T3. Present: claim count by class, process count with step counts and Retain: No counts, need count, legacy count, `same-as` questions, and the summary. Ask "Approve stage T3 and proceed to T4?"
+
+### T4. Write claims
+
+Goal: the claims committed and, where there is a graph, merged.
+
+1. Check that `transcripts/claims/T<nnn>.json` does not exist. If it does, stop and report.
+2. Write the claims as a JSON array to that path. Escape quotes, backslashes and newlines in string values. Exclude any claim still marked `inferred` with an unanswered question; there should be none after T2 and T3.
+3. Read the file back and count objects (`grep -c '"id": "T'`). It must equal the claim count in the draft.
+4. If `knowledge_base_form` is `graph`: build the list of nodes (one per claim, all fields, plus `source_kind: transcript`) and edges (one per relation, from claim id to target id, labelled with the relation word). Present the counts and a sample of five of each. On approval, write the merged graph, read it back, and verify the node count increased by exactly the claim count.
+5. Move the transcript: `git mv` is not available because `transcripts/input/` is ignored, so use `mv "<file>" "transcripts/processed/T<nnn>-<file>"`.
+6. Commit `transcripts/claims/T<nnn>.json` and `transcripts/processed/T<nnn>-<file>` (and the graph if merged) with the message `Ingest transcript T<nnn>: <file>`.
+7. Only after the commit succeeds, set the session to `T4, complete` in `state.md`.
+
+Checkpoint T4. Present: claims file path, claim count, verification result, graph merge result if any, commit hash. Say that the register runner can now be run from Phase 0 or Phase 2.
+
+## 6. Claim record
+
+One JSON object per claim, in a top-level array, one file per session.
+
+| Field | Rule |
+|---|---|
+| id | `T<nnn>-C<nnn>`. Never reused. |
+| statement | One sentence, in the SME's words tidied only for grammar. |
+| quote | Verbatim passage text. Mandatory. |
+| session | Session id. |
+| file | Transcript file name as it was in `transcripts/input/`. |
+| passage | Passage number as a string, with `(a)` or `(b)` when split, e.g. `"12(b)"`. |
+| timestamp | Start of the passage, `HH:MM:SS.mmm`. |
+| speaker | Mapped person name, or "Unattributed". |
+| role | `consultant`, `sme` or `unknown`. |
+| topic | Topic label from T1. |
+| class | `current`, `current-not-needed`, `legacy`, `need`, `decision`, `limitation`, `risk`, `open-item` or `context`. |
+| confidence | `extracted` or `inferred`. |
+| relations | Array of strings, each `<relation> <target claim id>` with optional `; <detail>`. Relations: `step-of <id>; step n`, `retain no; <reason>`, `replaces <id>`, `preserves <id>`, `answers <id>`, `about <id>`, `same-as <id>`. |
+| source_kind | Always `"transcript"`. |
+
+Example:
+
+```json
+[
+  {
+    "id": "T003-C016",
+    "statement": "A new customer order is handled from the sales team's email.",
+    "quote": "Sure. The order arrives by email from the sales team.",
+    "session": "T003",
+    "file": "discovery-orders.vtt",
+    "passage": "2",
+    "timestamp": "00:00:04.000",
+    "speaker": "Tom Reilly",
+    "role": "sme",
+    "topic": "Order intake",
+    "class": "current",
+    "confidence": "extracted",
+    "relations": ["answers T003-C015"],
+    "source_kind": "transcript"
+  },
+  {
+    "id": "T003-C017",
+    "statement": "The order is keyed into the ledger and the reference copied into the tracking spreadsheet.",
+    "quote": "I key it into the ledger and then copy the reference into the tracking spreadsheet.",
+    "session": "T003",
+    "file": "discovery-orders.vtt",
+    "passage": "2",
+    "timestamp": "00:00:04.000",
+    "speaker": "Tom Reilly",
+    "role": "sme",
+    "topic": "Order intake",
+    "class": "current",
+    "confidence": "extracted",
+    "relations": ["step-of T003-C016; step 1"],
+    "source_kind": "transcript"
+  }
+]
+```
+
+A process is one claim of class `current` naming the process and its trigger, plus one claim per step carrying `step-of`. The register runner builds one PRC per process claim.
+
+## 7. Session summary
+
+`03-summary.md` has these headed sections, in order:
+
+1. **Session.** Id, meeting date, source file, duration (last cue end), speakers with role and the share of passages attributed to a named person. A warning line if no speaker tags were present at all.
+2. **Topics.** One row per topic: name, passage range, who led it, claim ids produced.
+3. **Processes described.** One row per process claim: statement, step count, Retain: No count, speakers.
+4. **Needs raised.** One row per need claim: statement, MoSCoW from the modal, the step it replaces or preserves if any.
+5. **Legacy passages.** One row per legacy claim: quote, speaker, the words that made it legacy.
+6. **Other claims.** Decision, limitation, risk and open-item claims, one row each with statement and speaker.
+7. **Open questions.** Count, and the question numbers still unanswered.
+
+Regenerate the summary whenever claims change at a checkpoint.
