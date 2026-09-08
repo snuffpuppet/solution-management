@@ -1,6 +1,6 @@
 # Solution management
 
-Version 1.4, 9 September 2026.
+Version 1.5, 9 September 2026.
 
 ## Quickstart
 
@@ -28,6 +28,7 @@ Each session gets `T` plus a three-digit number, one higher than any id already 
 | `work/transcripts/T<nnn>/` | Passages, classifications, the claims draft, your questions and answers, and the session summary |
 | `work/transcripts/state.md` | The session table and audit rows across every ingestion |
 | `transcripts/stakeholders.md` | Who may appear in a transcript, with their speaker tags and role; grows as sessions are ingested |
+| `roles.md` | The speaker roles, what each may contribute and how it lands in a register; edit here to change a role |
 
 Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
 

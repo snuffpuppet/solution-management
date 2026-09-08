@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.6, 9 September 2026. Owner: Adam Moyes.
+Version 1.7, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -12,7 +12,7 @@ A set of playbook-style markdown documents, plus a few shell tools, for managing
 
 | Layer | File | Responsibility |
 |---|---|---|
-| Model | `solution-register-model.md` | What items are: types, states, fields, relationships, views, integrity rules. Tool-agnostic. |
+| Model | `solution-register-model.md`, `roles.md` | What items are: types, states, fields, relationships, views, integrity rules. Who speaks in a session and what each role may yield. Tool-agnostic. |
 | Register runner | `solution-register-runner.md` | How claims in a knowledge base become register pages in Confluence. |
 | Transcript runner | `transcript-runner.md` | How a WebVTT transcript becomes atomic claims for the register runner. |
 | Tools | `tools/` | Deterministic shell: the parser, the report script, their tests, and grep checks over the documents. |

@@ -2,7 +2,7 @@
 set -u
 cd "$(dirname "$0")/.."
 fail=0
-for s in tools/check-model-prc.sh tools/check-model-cr.sh tools/check-runner.sh tools/check-transcript-runner.sh tools/check-stakeholders.sh tools/test-vtt-to-passages.sh tools/test-ingestion-report.sh; do
+for s in tools/check-model-prc.sh tools/check-model-cr.sh tools/check-runner.sh tools/check-transcript-runner.sh tools/check-stakeholders.sh tools/check-roles.sh tools/test-vtt-to-passages.sh tools/test-ingestion-report.sh; do
   echo "== $s"; "$s" || fail=1
 done
 echo "== README"
@@ -13,7 +13,7 @@ git check-ignore -q transcripts/input/x.vtt 2>/dev/null && { echo "FAIL transcri
 echo "== folders"
 for d in transcripts/input transcripts/processed transcripts/claims; do [ -f "$d/.gitkeep" ] && echo "ok   $d" || { echo "FAIL $d"; fail=1; }; done
 echo "== em dash scan"
-if grep -l -- '—' solution-register-model.md solution-register-runner.md transcript-runner.md README.md ARCHITECTURE.md transcripts/stakeholders.md CLAUDE.md LOG.md ENHANCEMENTS.md HANDOVER.md .claude/skills/*/SKILL.md 2>/dev/null; then echo "FAIL em dash found"; fail=1; else echo "ok   no em dashes"; fi
+if grep -l -- '—' solution-register-model.md solution-register-runner.md transcript-runner.md README.md ARCHITECTURE.md transcripts/stakeholders.md roles.md CLAUDE.md LOG.md ENHANCEMENTS.md HANDOVER.md .claude/skills/*/SKILL.md 2>/dev/null; then echo "FAIL em dash found"; fail=1; else echo "ok   no em dashes"; fi
 echo "== skills"
 for s in ingest-transcript ingestion-report handover; do grep -q "^name: $s$" ".claude/skills/$s/SKILL.md" 2>/dev/null && echo "ok   skill $s" || { echo "FAIL skill $s"; fail=1; }; done
 echo "== handover"
