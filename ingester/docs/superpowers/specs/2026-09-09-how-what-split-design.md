@@ -1,6 +1,6 @@
 # Split the repository into the how and the what
 
-Version 1.2, 9 September 2026. Owner: Adam Moyes.
+Version 1.3, 9 September 2026. Owner: Adam Moyes.
 
 ## 1. Purpose
 
@@ -46,8 +46,8 @@ solution-management/
                          either folder as a parent directory.
   README.md              the repository shape
   .gitignore
-  .claude/skills/        the four slash commands. AT THE ROOT, not in an
-                         engagement: see 3.2.
+  .claude/skills/        the four slash commands, the single canonical copy.
+                         Each engagement reaches them by a symlink: see 3.2.
 
   ingester/                        the how
     CLAUDE.md            the layout authority. Binds <HOW>, states which
@@ -88,15 +88,25 @@ Each has a distinct job. The root holds rules that apply wherever you are workin
 
 Revised 9 September 2026 (version 1.2). The four skills were to move into the engagement. They stay at the root instead, ruled by the owner after the sandbox refused to move them: this project's `.claude/skills` is deliberately protected from agent modification, and moving them is exactly that.
 
-The pipeline is unaffected. Claude Code loads `.claude/skills` from the working directory and every ancestor, and the repository root is an ancestor of `engagements/<name>/`, so all four load for an engagement session.
+Version 1.2 of this document claimed the pipeline was unaffected, on the grounds that Claude Code loads `.claude/skills` from the working directory and every ancestor, so the root copy would serve an engagement session. **That was wrong.** Tested on 9 September 2026, `/build-registers` returned "Unknown command" from inside the engagement. Making an engagement its own git repository (2.1) means a session launched there treats the engagement as the whole project, so the root `.claude/skills` falls outside it. The claim was asserted without being tested and a design section was built on it.
 
-One set of root launchers then serves both contexts, which is cleaner than one set per folder. A skill's bare relative paths resolve against the working directory, so `HANDOVER.md` and `LOG.md` mean the engagement's when run from an engagement and the ingester's when run from the ingester. The ingester therefore needs no handover skill of its own, and two skills competing for the name `handover` never arise.
+Each engagement therefore reaches the skills through a symlink:
+
+    engagements/<name>/.claude/skills -> ../../../.claude/skills
+
+That keeps one canonical copy. Copying the four skills into each engagement was tried first and rejected: a skill fix would then need applying to every engagement, which is the opposite of what D8's thin launchers are for.
+
+Symlinks were offered and declined earlier in this design, for the `<HOW>` path convention in 4.1. They are unavoidable here, because skill discovery is a filesystem mechanism and no document can redirect it.
+
+One canonical set of launchers serves both contexts. A skill's bare relative paths resolve against the working directory, so `HANDOVER.md` and `LOG.md` mean the engagement's when run from an engagement and the ingester's when run from the ingester. The ingester therefore needs no handover skill of its own, and two skills competing for the name `handover` never arise.
+
+`check-engagement.sh` asserts that each of the four skills is reachable from the engagement. Without that, an engagement missing its symlink passes every check and then cannot run a single command, which is precisely the failure that exposed this.
 
 D8 still holds. The skills remain launchers with no rules; the rule stating which check and which log belong to which folder lives in `ingester/CLAUDE.md`, the layout authority.
 
 Write isolation is untouched. From an engagement's point of view the skills are read-only, and everything they write resolves into the working directory.
 
-The consequence accepted with this: a second engagement cannot have engagement-specific launchers. That is consistent with D8, which forbids a launcher from carrying engagement-specific rules anyway.
+Two consequences accepted with this. A second engagement cannot have engagement-specific launchers, which is consistent with D8 forbidding a launcher from carrying engagement-specific rules anyway. And the symlink points outside the engagement's own repository, so cloning an engagement on its own leaves it dangling; the arrangement assumes an engagement sits beside the ingester.
 
 ## 4. The `<HOW>` contract
 

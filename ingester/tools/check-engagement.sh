@@ -20,6 +20,12 @@ echo "== em dash scan"
 if grep -l -- '—' "${p}transcripts/stakeholders.md" 2>/dev/null; then
   echo "FAIL em dash found"; fail=1
 else echo "ok   no em dashes"; fi
+echo "== skills reachable"
+for sk in ingest-transcript build-registers ingestion-report handover; do
+  grep -q "^name: $sk$" "${p}.claude/skills/$sk/SKILL.md" 2>/dev/null \
+    && echo "ok   skill $sk reachable from the engagement" \
+    || { echo "FAIL skill $sk not reachable from the engagement"; fail=1; }
+done
 echo "== findings"; "$here/check-findings.sh" "$root" || fail=1
 echo "== write isolation, static"
 if grep -n '\.\./' "${p}CLAUDE.md" 2>/dev/null | grep -v '\.\./\.\./ingester/CLAUDE\.md' | grep -q .; then

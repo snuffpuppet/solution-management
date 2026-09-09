@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.11, 9 September 2026. Owner: Adam Moyes.
+Version 1.12, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -16,7 +16,7 @@ A set of playbook-style markdown documents, plus a few shell tools, for managing
 | Register runner | `<HOW>/solution-register-runner.md` | How claims in a knowledge base become register pages in Confluence. |
 | Transcript runner | `<HOW>/transcript-runner.md` | How a WebVTT transcript becomes atomic claims for the register runner. |
 | Tools | `<HOW>/tools/` | Deterministic shell: the parser, the report script, their tests, and grep checks over the documents. |
-| Skills | `.claude/skills/` | Thin slash commands, at the repository root, that launch a runner or a tool. They hold no rules of their own. |
+| Skills | `.claude/skills/` | Thin slash commands that launch a runner or a tool. They hold no rules of their own. One canonical copy at the repository root; each engagement reaches it by a symlink at `engagements/<name>/.claude/skills`. |
 | Data | `transcripts/` | Input, processed transcripts, claims and the stakeholder registry (all committed), in the engagement. |
 | Registers | `registers/` | The eight registers, the scope taxonomy and the two generated views, one markdown table each, in the engagement. Written by the register runner, editable by hand, committed. |
 | Working state | `work/` | Per-run state, questions, drafts, summaries and reports, in the engagement. Committed at every checkpoint; only `tmp/` subfolders are scratch. |
@@ -93,7 +93,7 @@ Added 9 September 2026 (version 1.10). The register runner's default target is `
 Model and runner share a version line; the transcript runner has its own. A change to any of them bumps the version and date in the same commit.
 
 ### D12. The method and the engagements are separate folders, and engagements never write outward
-Added 9 September 2026 (version 1.11). `ingester/` holds the method: the model, `<HOW>/roles.md`, both runners, the tools and this document. `engagements/<name>/` holds one engagement's transcripts, claims, registers, stakeholder registry and working state. The four skills in `.claude/skills/` stay at the repository root, not inside any engagement; they are the one set of launchers for both contexts, because a skill's relative paths resolve against the working directory. Claude runs with an engagement as the working directory, so a bare relative path in a how-document resolves against the engagement, and a reference to machinery carries the `<HOW>/` prefix bound in `ingester/CLAUDE.md`. `ingester/CLAUDE.md` is the only how-file permitted to contain a parent-directory reference, so exactly one file knows how deep an engagement sits.
+Added 9 September 2026 (version 1.11). `ingester/` holds the method: the model, `<HOW>/roles.md`, both runners, the tools and this document. `engagements/<name>/` holds one engagement's transcripts, claims, registers, stakeholder registry and working state. The four skills in `.claude/skills/` are one canonical set at the repository root, serving both contexts because a skill's relative paths resolve against the working directory. An engagement cannot see them by inheritance: being its own git repository, a session launched there treats the engagement as the whole project. So every engagement carries a symlink at `engagements/<name>/.claude/skills` resolving to the canonical set at the repository root; `<HOW>/CLAUDE.md` states the literal path, being the one file permitted to name a parent directory. Creating an engagement without that symlink leaves a folder that passes no command. `check-engagement.sh` asserts all four are reachable, for that reason. Claude runs with an engagement as the working directory, so a bare relative path in a how-document resolves against the engagement, and a reference to machinery carries the `<HOW>/` prefix bound in `ingester/CLAUDE.md`. `ingester/CLAUDE.md` is the only how-file permitted to contain a parent-directory reference, so exactly one file knows how deep an engagement sits.
 
 No action taken while working in an engagement may write any file outside that engagement's folder. Reads across the boundary are expected. This is structural rather than merely a rule: `engagements/` is gitignored in this repository and each engagement is its own nested git repository, so from inside an engagement git cannot see, stage or commit anything outside it. That is also what lets this repository be pushed carrying only the method, since nothing private is reachable from it. Each engagement keeps its own history, so P11 still holds.
 

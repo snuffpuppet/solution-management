@@ -31,6 +31,17 @@ against the working directory, so run from an engagement, `HANDOVER.md` and
 ingester's. Nothing under `.claude/skills/` belongs to this folder or to any
 engagement.
 
+An engagement cannot inherit them. Being its own git repository, a session
+launched there treats the engagement as the whole project, so the root
+`.claude/skills` falls outside it and no slash command is found. Every
+engagement therefore carries this symlink, and a new engagement is not
+usable until it does:
+
+    engagements/<name>/.claude/skills -> ../../../.claude/skills
+
+`<HOW>/tools/check-engagement.sh` asserts all four skills are reachable, so
+a missing symlink fails a check rather than surfacing as an unknown command.
+
 ## Write isolation
 
 No action taken while working in an engagement may write any file outside
