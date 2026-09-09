@@ -2,8 +2,8 @@
 
 ## Every session, on start
 
-1. Read `HANDOVER.md`. It says where the last session stopped and what to do next.
-2. Run `git status` and `tools/check-all.sh`. Both must be clean before new work.
+1. Run `git status` and `tools/check-all.sh`. Both must be clean before new work.
+2. `HANDOVER.md` says where the last session stopped and what to do next. Read it when the user asks you to continue from it, or when the request depends on where earlier work stopped; otherwise it is optional.
 3. If `work/transcripts/state.md` or `work/state.md` shows an incomplete run, mention it to the user before starting anything else.
 
 ## Before any structural change
