@@ -40,6 +40,8 @@ else
   mkdir -p "$tmp/ingester"
   cp -R "$how/." "$tmp/ingester/"
   cp "$repo/README.md" "$repo/CLAUDE.md" "$tmp/" 2>/dev/null || true
+  mkdir -p "$tmp/.claude"
+  cp -R "$repo/.claude/skills" "$tmp/.claude/" 2>/dev/null || true
   if (cd "$tmp" && CHECK_HOW_INNER=1 ingester/tools/check-how.sh >/dev/null 2>&1); then
     echo "ok   how-check passes with no engagement present"
   else

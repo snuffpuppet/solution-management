@@ -15,7 +15,11 @@ for d in $docs; do
     || { echo "FAIL $d: $((t-n)) of $t how-refs unprefixed"; fail=1; }
 done
 # 2. no double prefix
-grep -rq '<HOW>/<HOW>' "$how" 2>/dev/null && { echo "FAIL double <HOW> prefix"; fail=1; } || echo "ok   no double prefixes"
+dp=0
+for d in $docs; do
+  grep -q '<HOW>/<HOW>' "$how/$d" 2>/dev/null && { echo "FAIL $d has a double <HOW> prefix"; fail=1; dp=1; }
+done
+[ "$dp" -eq 0 ] && echo "ok   no double prefixes"
 # 3. no how-document contains ../, exempting CLAUDE.md which states the binding
 for d in $docs; do
   grep -q '\.\./' "$how/$d" 2>/dev/null && { echo "FAIL $d contains ../"; fail=1; } || echo "ok   $d has no ../"

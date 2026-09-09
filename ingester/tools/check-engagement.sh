@@ -13,7 +13,7 @@ for d in transcripts/input transcripts/processed transcripts/claims; do
   [ -f "${p}$d/.gitkeep" ] && echo "ok   $d" || { echo "FAIL $d"; fail=1; }
 done
 echo "== gitignore"
-git check-ignore -q "${p}transcripts/input/x.vtt" 2>/dev/null \
+git -C "$root" check-ignore -q transcripts/input/x.vtt \
   && { echo "FAIL transcripts/input must not be ignored"; fail=1; } \
   || echo "ok   transcripts/input persisted"
 echo "== em dash scan"

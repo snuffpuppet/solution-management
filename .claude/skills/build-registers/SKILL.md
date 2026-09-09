@@ -12,7 +12,7 @@ Start the register runner over the whole knowledge base. The runner document is 
 
 1. Target is `local` unless `$ARGUMENTS` is `confluence`. Any other argument: say `Usage: /build-registers [confluence]` and stop.
 2. If `work/state.md` shows a register run that is not complete, tell the user and ask whether to resume it or start again.
-3. Read `solution-register-runner.md` in full, then `solution-register-model.md` in full.
+3. Read `<HOW>/solution-register-runner.md` in full, then `<HOW>/solution-register-model.md` in full.
 4. Execute the register runner from Phase 0 with that target and knowledge base `transcripts/claims/`. Follow its checkpoint protocol: stop at every checkpoint and wait for approval.
 
 ## Do not

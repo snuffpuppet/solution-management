@@ -10,7 +10,7 @@ Report on the effectiveness of transcript ingestion and the models that ran it. 
 
 ## Steps
 
-1. Run `tools/ingestion-report.sh $ARGUMENTS`. With no arguments it reads `work/transcripts/state.md` and `transcripts/claims/`. If it exits 2, say that no ingestion state exists yet and stop.
+1. Run `<HOW>/tools/ingestion-report.sh $ARGUMENTS`. With no arguments it reads `work/transcripts/state.md` and `transcripts/claims/`. If it exits 2, say that no ingestion state exists yet and stop.
 2. Read the output. It has four tables: sessions, audit rows per stage, totals by model, and claims by class per session.
 3. Write the output to `work/transcripts/reports/report-<today>.md`, with today as an ISO date such as `2026-09-09`, and print the "By model" and "Claims by class" tables in the conversation.
 4. Below the tables, give an interpretation in at most six sentences, covering:
