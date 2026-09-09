@@ -68,8 +68,8 @@
 <path d="M622,246.0 L644,246.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="821" y="215" width="155" height="62" rx="7" fill="#fdecec" stroke="#b83232" stroke-width="1.6"/>
 <text x="898.5" y="232" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">LIM Under assessment</text>
-<text x="898.5" y="246" text-anchor="middle" font-size="9.8" fill="#444">the four exits to the right;</text>
-<text x="898.5" y="258" text-anchor="middle" font-size="9.8" fill="#444">pick one</text>
+<text x="898.5" y="246" text-anchor="middle" font-size="9.8" fill="#444">Options listed with impact</text>
+<text x="898.5" y="258" text-anchor="middle" font-size="9.8" fill="#444">and phase; choose one</text>
 <path d="M799,246.0 L821,246.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="998" y="215" width="155" height="62" rx="7" fill="#f3f3f3" stroke="#777" stroke-width="1.6"/>
 <text x="1075.5" y="232" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Accept</text>
@@ -97,15 +97,16 @@
 <path d="M1153,316.0 L1175,316.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <path d="M1330,316.0 L1352,316.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="998" y="355" width="155" height="62" rx="7" fill="#f3f3f3" stroke="#777" stroke-width="1.6"/>
-<text x="1075.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Defer</text>
-<text x="1075.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">fix it in a later phase</text>
-<rect x="1175" y="355" width="155" height="62" rx="7" fill="#fff8e6" stroke="#c77d00" stroke-width="1.6"/>
-<text x="1252.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">REQ next phase</text>
-<text x="1252.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">plus a next-phase CR if it</text>
-<text x="1252.5" y="398" text-anchor="middle" font-size="9.8" fill="#444">costs</text>
+<text x="1075.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Change later</text>
+<text x="1075.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">fix it in a named phase</text>
+<rect x="1175" y="355" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
+<text x="1252.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Deferred</text>
+<text x="1252.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">waits for phase planning;</text>
+<text x="1252.5" y="398" text-anchor="middle" font-size="9.8" fill="#444">then strip 4</text>
 <rect x="1352" y="355" width="155" height="62" rx="7" fill="#fdecec" stroke="#b83232" stroke-width="1.6"/>
-<text x="1429.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">LIM Deferred</text>
-<text x="1429.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">shows on the next-phase view</text>
+<text x="1429.5" y="372" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">LIM Change requested</text>
+<text x="1429.5" y="386" text-anchor="middle" font-size="9.8" fill="#444">CR shows on the next-phase</text>
+<text x="1429.5" y="398" text-anchor="middle" font-size="9.8" fill="#444">view</text>
 <path d="M976,246.0 C987.0,246.0 987.0,386.0 998,386.0" stroke="#b83232" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <path d="M1153,386.0 L1175,386.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <path d="M1330,386.0 L1352,386.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
@@ -168,53 +169,50 @@
 <path d="M976,561.0 C987.0,561.0 987.0,771.0 998,771.0" stroke="#3a7d2c" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)"/>
 <rect x="20" y="830" width="1680" height="160" rx="8" fill="#1a7f8e" fill-opacity="0.18" stroke="none"/>
 <text x="36" y="854" font-size="13" font-weight="bold" fill="#222">4. Change request</text>
-<text x="36" y="872" font-size="10.5" fill="#555">from an ask or from a limitation; one</text>
-<text x="36" y="885" font-size="10.5" fill="#555">row for its whole life, vendor number in</text>
-<text x="36" y="898" font-size="10.5" fill="#555">Vendor ref</text>
+<text x="36" y="872" font-size="10.5" fill="#555">raised only once a limitation or</text>
+<text x="36" y="885" font-size="10.5" fill="#555">requirement chose to ask for a change;</text>
+<text x="36" y="898" font-size="10.5" fill="#555">one row for its whole life</text>
 <rect x="290" y="845" width="155" height="62" rx="7" fill="#f3f3f3" stroke="#777" stroke-width="1.6"/>
-<text x="367.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Ask, or LIM change path</text>
-<text x="367.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">a stakeholder wants X, or</text>
-<text x="367.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">strip 2 said fix it now</text>
+<text x="367.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">LIM or REQ chose change</text>
+<text x="367.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">strip 2 said fix it, now or</text>
+<text x="367.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">in a named phase</text>
 <rect x="467" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
 <text x="544.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Proposed</text>
 <text x="544.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">Reason, Raised by, Raised</text>
-<text x="544.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">on, Phase, Implemented by</text>
+<text x="544.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">on, Phase, triggered by</text>
 <path d="M445,876.0 L467,876.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-<rect x="644" y="845" width="155" height="62" rx="7" fill="#e8f1fb" stroke="#1f5fa8" stroke-width="1.6" stroke-dasharray="5,3"/>
-<text x="721.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">OI: submit it</text>
-<text x="721.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">owner chases the estimate</text>
-<text x="721.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">and the approval</text>
+<rect x="644" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
+<text x="721.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Options</text>
+<text x="721.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">ways to make the change,</text>
+<text x="721.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">each with impact and phase</text>
 <path d="M622,876.0 L644,876.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="821" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="898.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Submitted</text>
-<text x="898.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">handed to vendor or team.</text>
-<text x="898.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">Vendor ref when vendor</text>
+<text x="898.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR For approval</text>
+<text x="898.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">Consulted; stakeholders pick</text>
+<text x="898.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">an option</text>
 <path d="M799,876.0 L821,876.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="998" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="1075.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Impact assessment</text>
-<text x="1075.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">estimate back: cost and</text>
-<text x="1075.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">time, or effort and who</text>
+<text x="1075.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Approved &gt; Submitted</text>
+<text x="1075.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">Chosen option, Approved by.</text>
+<text x="1075.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">Vendor ref when vendor</text>
 <path d="M976,876.0 L998,876.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="1175" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="1252.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Approved</text>
-<text x="1252.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">Approved by, Approved on.</text>
-<text x="1252.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">Phase confirmed</text>
+<text x="1252.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Delivered</text>
+<text x="1252.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">built. Linked REQ moves to</text>
+<text x="1252.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">Delivered</text>
 <path d="M1153,876.0 L1175,876.0" stroke="#1a7f8e" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-<rect x="1352" y="845" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="1429.5" y="862" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Delivered</text>
-<text x="1429.5" y="876" text-anchor="middle" font-size="9.8" fill="#444">built. Linked REQ moves to</text>
-<text x="1429.5" y="888" text-anchor="middle" font-size="9.8" fill="#444">Delivered</text>
-<path d="M1330,876.0 L1352,876.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-<rect x="1175" y="915" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="1252.5" y="932" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Rejected</text>
-<text x="1252.5" y="946" text-anchor="middle" font-size="9.8" fill="#444">LIM goes back to assessment,</text>
-<text x="1252.5" y="958" text-anchor="middle" font-size="9.8" fill="#444">or REQ set to Won't</text>
-<path d="M1153,876.0 C1164.0,876.0 1164.0,946.0 1175,946.0" stroke="#1a7f8e" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-<rect x="1352" y="915" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
-<text x="1429.5" y="932" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Deferred instead?</text>
-<text x="1429.5" y="946" text-anchor="middle" font-size="9.8" fill="#444">set Phase = next phase; it</text>
-<text x="1429.5" y="958" text-anchor="middle" font-size="9.8" fill="#444">leaves the outstanding view</text>
-<path d="M1330,946.0 L1352,946.0" stroke="#888" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+<rect x="467" y="915" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
+<text x="544.5" y="932" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Deferred</text>
+<text x="544.5" y="946" text-anchor="middle" font-size="9.8" fill="#444">created here for a later</text>
+<text x="544.5" y="958" text-anchor="middle" font-size="9.8" fill="#444">phase; reopens at phase</text>
+<text x="544.5" y="970" text-anchor="middle" font-size="9.8" fill="#444">planning</text>
+<path d="M445,876.0 C456.0,876.0 456.0,946.0 467,946.0" stroke="#1a7f8e" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+<path d="M622,946.0 C633.0,946.0 633.0,876.0 644,876.0" stroke="#888" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+<rect x="998" y="915" width="155" height="62" rx="7" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.6"/>
+<text x="1075.5" y="932" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">CR Withdrawn or Rejected</text>
+<text x="1075.5" y="946" text-anchor="middle" font-size="9.8" fill="#444">LIM back to assessment;</text>
+<text x="1075.5" y="958" text-anchor="middle" font-size="9.8" fill="#444">usually Accepted with a DEC</text>
+<path d="M976,876.0 C987.0,876.0 987.0,946.0 998,946.0" stroke="#1a7f8e" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="20" y="1005" width="1680" height="92" rx="8" fill="#6a3fa0" fill-opacity="0.18" stroke="none"/>
 <text x="36" y="1029" font-size="13" font-weight="bold" fill="#222">5. Risk raised</text>
 <text x="36" y="1047" font-size="10.5" fill="#555">a record with a review date; the weekly</text>
@@ -287,7 +285,8 @@
 <rect x="1175" y="1125" width="155" height="62" rx="7" fill="#f3f3f3" stroke="#777" stroke-width="1.6"/>
 <text x="1252.5" y="1142" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#222">Phase planning</text>
 <text x="1252.5" y="1156" text-anchor="middle" font-size="9.8" fill="#444">next-phase view: deferred</text>
-<text x="1252.5" y="1168" text-anchor="middle" font-size="9.8" fill="#444">LIMs, REQs and CRs together</text>
+<text x="1252.5" y="1168" text-anchor="middle" font-size="9.8" fill="#444">CRs by phase, then</text>
+<text x="1252.5" y="1180" text-anchor="middle" font-size="9.8" fill="#444">next-phase REQs</text>
 <path d="M1153,1156.0 L1175,1156.0" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 <rect x="290" y="1222" width="16" height="12" rx="3" fill="#f3f3f3" stroke="#777"/>
 <text x="312" y="1232" font-size="11" fill="#333">trigger or event</text>

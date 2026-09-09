@@ -3,7 +3,7 @@ set -u
 f="$(dirname "$0")/../solution-register-model.md"
 fail=0
 need() { grep -qF -- "$1" "$f" && echo "ok   $1" || { echo "FAIL $1"; fail=1; }; }
-need "Version 2.11, 9 September 2026"
+need "Version 2.12, 9 September 2026"
 need "| Current practice | This is how we do X today. | PRC |"
 need "| Process | PRC | Draft, Confirmed, Superseded*, Retired* |"
 need "| Process | An SME describes work performed today."

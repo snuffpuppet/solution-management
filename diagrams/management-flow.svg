@@ -59,9 +59,9 @@
 <text x="660.0" y="271" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">REQ Designed</text>
 <text x="660.0" y="289" text-anchor="middle" font-size="11.5" fill="#555">the design covers it; DEC only if chosen</text>
 <circle cx="560" cy="243" r="12" fill="#c77d00"/><text x="560" y="247" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">3</text>
-<rect x="1120" y="243" width="200" height="64" rx="8" fill="#fff8e6" stroke="#c77d00" stroke-width="1.5"/>
-<text x="1220.0" y="271" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">REQ Deferred</text>
-<text x="1220.0" y="289" text-anchor="middle" font-size="11.5" fill="#555">next-phase backlog, linked to the LIM</text>
+<rect x="1120" y="243" width="200" height="64" rx="8" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.5"/>
+<text x="1220.0" y="271" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">CR Deferred</text>
+<text x="1220.0" y="289" text-anchor="middle" font-size="11.5" fill="#555">named later phase, triggered by the LIM</text>
 <circle cx="1120" cy="243" r="12" fill="#c77d00"/><text x="1120" y="247" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">6c</text>
 <rect x="1360" y="243" width="200" height="64" rx="8" fill="#fff8e6" stroke="#c77d00" stroke-width="1.5"/>
 <text x="1460.0" y="271" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">REQ Delivered &gt; Verified</text>
@@ -115,12 +115,12 @@
 <path d="M1064,665 L1120,665" stroke="#b83232" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 <text x="1092" y="658" text-anchor="middle" font-size="10.5" fill="#b83232">change</text>
 <rect x="1120" y="633" width="225" height="64" rx="8" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.5"/>
-<text x="1232.5" y="661" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#222">CR Proposed &gt; Submitted</text>
-<text x="1232.5" y="679" text-anchor="middle" font-size="11.5" fill="#555">assessed: vendor ref, cost and time</text>
+<text x="1232.5" y="661" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#222">CR Proposed &gt; Options &gt; For approval</text>
+<text x="1232.5" y="679" text-anchor="middle" font-size="11.5" fill="#555">ways to make the change, each with impact</text>
 <circle cx="1120" cy="633" r="12" fill="#1a7f8e"/><text x="1120" y="637" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">6b</text>
 <rect x="1360" y="633" width="200" height="64" rx="8" fill="#e6f4f6" stroke="#1a7f8e" stroke-width="1.5"/>
 <text x="1460.0" y="661" text-anchor="middle" font-size="14" font-weight="bold" fill="#222">CR Approved &gt; Delivered</text>
-<text x="1460.0" y="679" text-anchor="middle" font-size="11.5" fill="#555">if rejected, LIM back to assessment</text>
+<text x="1460.0" y="679" text-anchor="middle" font-size="11.5" fill="#555">if withdrawn or rejected, LIM back to assessment</text>
 <circle cx="1360" cy="633" r="12" fill="#1a7f8e"/><text x="1360" y="637" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">7</text>
 <path d="M1345,665 L1360,665" stroke="#444" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
 <path d="M1460,633 L1460,307" stroke="#1a7f8e" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
@@ -152,9 +152,9 @@
 <text x="40" y="912" font-size="12" fill="#333"><tspan font-weight="bold">2</tspan>  Vendor proposes a design: log DEC Proposed addressing the REQ, raise an OI for our review.</text>
 <text x="40" y="934" font-size="12" fill="#333"><tspan font-weight="bold">3</tspan>  Review closes the OI: DEC Accepted if a real choice was made, REQ Designed once the design covers it.</text>
 <text x="40" y="956" font-size="12" fill="#333"><tspan font-weight="bold">4</tspan>  Design shows a gap: LIM Identified, introduced by the DEC. Raise an OI to assess it. Log any RSK the DEC raises.</text>
-<text x="40" y="978" font-size="12" fill="#333"><tspan font-weight="bold">5</tspan>  Assess the LIM inside that OI, then take exactly one disposition path.</text>
+<text x="40" y="978" font-size="12" fill="#333"><tspan font-weight="bold">5</tspan>  Assess the LIM inside that OI: list its Options with impact and phase, choose one, then take that disposition path.</text>
 <text x="820" y="890" font-size="12" fill="#333"><tspan font-weight="bold">6</tspan>  a Accept: a new DEC records why we live with it.  b Change now: a CR with vendor cost and time.</text>
-<text x="820" y="912" font-size="12" fill="#333">    c Defer: a REQ on the next-phase backlog.  d Resolved: the vendor fixed it, evidence noted.</text>
+<text x="820" y="912" font-size="12" fill="#333">    c Change later: a CR created in Deferred for a named phase.  d Resolved: the vendor fixed it, evidence noted.</text>
 <text x="820" y="934" font-size="12" fill="#333"><tspan font-weight="bold">7</tspan>  CR delivered, or the vendor builds the normal path: REQ Delivered, then Verified.</text>
 <text x="820" y="956" font-size="12" fill="#333"><tspan font-weight="bold">8</tspan>  Risks stay Mitigating until Retired. A Realised risk raises an OI.</text>
 <text x="820" y="978" font-size="12" fill="#333"><tspan font-weight="bold">9</tspan>  Every meeting: walk Register: Outstanding. Each OI gets a next action and due date, or closes into a record.</text>

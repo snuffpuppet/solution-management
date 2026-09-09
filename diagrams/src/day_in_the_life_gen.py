@@ -54,11 +54,11 @@ chain(215,[
  ('TRG','Discovery','the platform does not do what a REQ needs'),
  ('LIM','LIM Identified','Identified on, Raised by, constrains REQ-nnn'),
  ('OI','OI: assess it','owner named. Fill Impact. Talk to the vendor'),
- ('LIM','LIM Under assessment','the four exits to the right; pick one'),
+ ('LIM','LIM Under assessment','Options listed with impact and phase; choose one'),
 ])
 rows=[(215,'Accept','we live with it','DEC','DEC Accepted','Rationale, Consulted, Approved by, Decided on','LIM Accepted','Disposition record = the DEC'),
       (285,'Change now','fix it in this phase','CR','CR Proposed','continues on strip 4','LIM Change requested','status follows the CR'),
-      (355,'Defer','fix it in a later phase','REQ','REQ next phase','plus a next-phase CR if it costs','LIM Deferred','shows on the next-phase view'),
+      (355,'Change later','fix it in a named phase','CR','CR Deferred','waits for phase planning; then strip 4','LIM Change requested','CR shows on the next-phase view'),
       (425,'Resolved','the vendor fixed it','TRG','Evidence noted','vendor item or design version','LIM Resolved','no further work')]
 for y,ch,chs,t,rt,rs,lt,ls in rows:
     node(4,y,'TRG',ch,chs); node(5,y,t,rt,rs); node(6,y,'LIM',lt,ls)
@@ -76,18 +76,17 @@ cons=[(530,'REQ','addresses REQ-nnn','only if a real choice was made; REQ moves 
       (740,'DEC','Change of mind later','new DEC supersedes; old one marked Superseded, never edited')]
 for y,t,title,sub in cons:
     node(4,y,t,title,sub); arrow(3,530,4,y,'#3a7d2c',dash=(y==740))
-band(830,160,'4. Change request','from an ask or from a limitation; one row for its whole life, vendor number in Vendor ref',C['CR'][1])
+band(830,160,'4. Change request','raised only once a limitation or requirement chose to ask for a change; one row for its whole life',C['CR'][1])
 chain(845,[
- ('TRG','Ask, or LIM change path','a stakeholder wants X, or strip 2 said fix it now'),
- ('CR','CR Proposed','Reason, Raised by, Raised on, Phase, Implemented by'),
- ('OI','OI: submit it','owner chases the estimate and the approval'),
- ('CR','CR Submitted','handed to vendor or team. Vendor ref when vendor'),
- ('CR','CR Impact assessment','estimate back: cost and time, or effort and who'),
+ ('TRG','LIM or REQ chose change','strip 2 said fix it, now or in a named phase'),
+ ('CR','CR Proposed','Reason, Raised by, Raised on, Phase, triggered by'),
+ ('CR','CR Options','ways to make the change, each with impact and phase'),
+ ('CR','CR For approval','Consulted; stakeholders pick an option'),
+ ('CR','CR Approved > Submitted','Chosen option, Approved by. Vendor ref when vendor'),
 ])
-node(5,845,'CR','CR Approved','Approved by, Approved on. Phase confirmed'); arrow(4,845,5,845,'#1a7f8e')
-node(6,845,'CR','CR Delivered','built. Linked REQ moves to Delivered'); arrow(5,845,6,845)
-node(5,915,'CR','CR Rejected','LIM goes back to assessment, or REQ set to Won\'t'); arrow(4,845,5,915,'#1a7f8e')
-node(6,915,'CR','Deferred instead?','set Phase = next phase; it leaves the outstanding view'); arrow(5,915,6,915,'#888',dash=True)
+node(5,845,'CR','CR Delivered','built. Linked REQ moves to Delivered'); arrow(4,845,5,845,'#1a7f8e')
+node(1,915,'CR','CR Deferred','created here for a later phase; reopens at phase planning'); arrow(0,845,1,915,'#1a7f8e'); arrow(1,915,2,845,'#888',dash=True)
+node(4,915,'CR','CR Withdrawn or Rejected','LIM back to assessment; usually Accepted with a DEC'); arrow(3,845,4,915,'#1a7f8e')
 band(1005,92,'5. Risk raised','a record with a review date; the weekly routine keeps it honest',C['RSK'][1])
 chain(1020,[
  ('TRG','Review raises a risk','or an assumption that would hurt if wrong'),
@@ -106,7 +105,7 @@ chain(1125,[
  ('TRG','Blocked?','Blocked by is on the row; unblock or escalate'),
  ('LIM','LIMs over 14 days','disposition now, or a new due on their OI'),
  ('TRG','New items','id, Raised by, and an owner before the meeting ends'),
- ('TRG','Phase planning','next-phase view: deferred LIMs, REQs and CRs together'),
+ ('TRG','Phase planning','next-phase view: deferred CRs by phase, then next-phase REQs'),
 ])
 lx=290
 for t,name in [('TRG','trigger or event'),('REQ','requirement'),('DEC','decision'),('LIM','limitation'),('RSK','risk'),('CR','change request'),('OI','open item (the work)')]:

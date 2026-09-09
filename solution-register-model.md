@@ -1,6 +1,6 @@
 # Solution register model
 
-Version 2.11, 9 September 2026. Owner: Adam Moyes.
+Version 2.12, 9 September 2026. Owner: Adam Moyes.
 
 This file describes how we track the artifacts of solution architecture on a project where we are the design authority and a vendor builds the platform. It is tool-agnostic. It says what the item types are, how they relate, how each one moves, and what a healthy register looks like. It does not say how to build the registers in any particular tool; that is in `solution-register-runner.md`.
 
@@ -31,7 +31,7 @@ The goal is a set of registers that a person can open during a meeting and see w
 An open item closes only by creating or changing a record: a decision gets accepted, a limitation gets dispositioned, a change request gets raised, a requirement gets clarified, a risk gets retired. In a meeting we review one filtered list of open items. The registers behind them stay stable.
 
 **A limitation must be dispositioned, and each disposition links to a record.**
-A limitation leaves "Under assessment" by exactly one path, and each path names the record that carries the outcome.
+A limitation leaves "Under assessment" by exactly one path, and each path names the record that carries the outcome. The choice between living with it, working around it, and asking for a change now or in a later phase is made on the limitation, in its Options. A change request exists only once that choice asks for a change, and it carries the change's whole life from there, including a wait in Deferred for a later phase.
 
 **Registers and narrative are separate.**
 Registers hold items. Solution design documents hold narrative and reference items by id. A design document never holds the master copy of an item. This is what lets design documents be split per service, per customer service, or combined, without changing how tracking works.
@@ -80,10 +80,10 @@ Terminal states are marked *.
 |---|---|---|---|
 | Requirement | REQ | Draft, Agreed, Designed, Delivered, Verified*, Deferred*, Withdrawn* | MoSCoW (Must / Should / Could / Won't), Phase (this phase / next phase), Raised on (date the need was stated) |
 | Decision | DEC | Proposed, Accepted, Superseded*, Rejected* | Rationale (short, naming the rejected option where there was one), Raised by (who proposed it), Consulted (vendor, SMEs, stakeholder groups who had input), Approved by (the person or forum on our side who made it stick), Decided on (date of acceptance or rejection) |
-| Limitation | LIM | Identified, Under assessment, Accepted*, Change requested*, Deferred*, Resolved* | Identified on (date), Impact (one line: what it means for the customer or the operation), Disposition record (id of the DEC, CR or REQ that carries the outcome) |
+| Limitation | LIM | Identified, Under assessment, Accepted*, Change requested*, Resolved* | Identified on (date), Impact (one line: what it means for the customer or the operation), Options (numbered list, each `n. <option>; impact: <cost and time, or effort and who>; phase: <phase>`; accept it, work around it manually, request a change now and request a change in a named later phase are the usual options), Chosen option (the option number), Disposition record (id of the DEC or CR that carries the outcome) |
 | Risk | RSK | Identified, Mitigating, Realised*, Retired* | Identified on (date), Raised by (person, or the review it came from), Likelihood (L/M/H), Impact (L/M/H), Trigger (the observable event that says the risk has become real), Mitigation (what is being done, as text) |
 | Open item | OI | Open, In progress, Blocked, Closed* | Raised on (date), Raised by (person, or the meeting or review it came from), Blocked by (an id or a short reason, while Blocked), Resolution (id of the record it produced or changed), Closed on (date) |
-| Change request | CR | Proposed, Options, For approval, Approved, Submitted, Delivered*, Deferred*, Workaround accepted*, Rejected* | Phase (the named phase the chosen option lands in, set when an option is chosen), Raised on (date), Raised by (person, or the meeting or review it came from), Reason (one line: what the change buys), Options (numbered list, each `n. <option>; impact: <cost and time, or effort and who>; phase: <phase>`; defer to a later phase and accept a workaround are always valid options), Chosen option (the option number), Consulted (vendor, SMEs, stakeholder groups who had input), Approved by, Approved on, Disposition record (REQ id on Deferred, DEC id on Workaround accepted), CR page (optional link to the page holding the full option designs) |
+| Change request | CR | Proposed, Options, For approval, Approved, Submitted, Deferred, Delivered*, Withdrawn*, Rejected* | Phase (the named phase the change lands in; set when the CR is created from a limitation's chosen option, or when its own option is chosen), Raised on (date), Raised by (person, or the meeting or review it came from), Reason (one line: what the change buys), Options (numbered list, each `n. <option>; impact: <cost and time, or effort and who>; phase: <phase>`; every option is a way of making the change, since whether to change was settled on the limitation or requirement that triggered it), Chosen option (the option number), Consulted (vendor, SMEs, stakeholder groups who had input), Approved by, Approved on, CR page (optional link to the page holding the full option designs) |
 | Process | PRC | Draft, Confirmed, Superseded*, Retired* | Trigger (what starts the process, one line), Steps (numbered list; each step is `n. <step> [Retain: Yes/No/Unknown] [Actor: <role or person>]`, and a Retain of No carries the SME's reason after a semicolon inside the brackets), Systems (touched today, comma separated), Frequency (as stated by the SME, blank if not stated), Described on (date of the session), Raised by (the SMEs who described it, from transcript attribution; "Unattributed" if none) |
 
 ### 4.3 Use it when
@@ -92,20 +92,20 @@ Terminal states are marked *.
 |---|---|
 | Requirement | We need the solution to do something. Owned by whoever stated the need, usually the SME or stakeholder who raised it, because they can say whether it has been met. |
 | Decision | We chose how, or accepted a constraint. See 4.5. |
-| Limitation | The solution will not do, or does differently, something we need. A fact about the solution, not a piece of work. Title says what the solution does; Impact says why we care. |
+| Limitation | The solution will not do, or does differently, something we need. A fact about the solution, not a piece of work. Title says what the solution does; Impact says why we care; Options says what we could do about it and Chosen option says what we decided. |
 | Risk | Something might go wrong, or an assumption is unverified and would hurt if wrong. A record, not a piece of work: it carries who raised it and a review date, and the weekly routine reviews it. Mitigation actions are open items with their own owners. Anyone who sees the trigger happen raises an open item and the risk moves to Realised. |
 | Open item | Someone must do something before a record can change. The only thing you work. |
-| Change request | Agreed scope or design must change and it costs time, money or effort. One row for the whole life of the change, ours from Proposed, with the vendor's number in Vendor ref once they assign one. Links says what triggered it; Reason says what it buys, for the reader in the approval meeting. |
+| Change request | We have decided to ask for a change to agreed scope or design, now or in a named later phase, and it costs time, money or effort. One row for the whole life of the change, ours from Proposed or Deferred, with the vendor's number in Vendor ref once they assign one. Links says what triggered it; Reason says what it buys, for the reader in the approval meeting. Whether to change at all is not a CR question: it is answered on the limitation's Options or by the requirement's open item. |
 | Process | An SME describes work performed today. One row per named end-to-end process, with steps inside the row, so the register stays readable in a meeting. A step is addressed as PRC-nnn/step n. Legacy steps no longer performed are never recorded here; current steps the SME says are not needed are recorded with Retain: No and the reason, and raise no requirement on their own. |
 
 ### 4.4 Transition rules
 
 - Requirement: the Owner is the person who stated the need, and Raised on is when they stated it. MoSCoW is required from Draft onwards. Won't means agreed as out of this project and is recorded rather than deleted; a need wanted later is Must, Should or Could with Phase = next phase. A requirement row carries no next action: work to get it agreed, designed or verified is an open item in Links, and a requirement in Draft must have one. Designed means a section of a design document, ours or the vendor's, covers it, and Source or Links points at that section. A decision link is needed only where a real choice was made. Most requirements never have a decision.
 - Decision: while Proposed, an open item in Links carries the owner, next action and due date; the decision row itself has none. Accepted or Rejected needs Approved by, Decided on and at least one Consulted entry, and Approved by is ours. Accepted is immutable. To change an accepted decision, create a new one, mark the old one Superseded, and write "superseded by DEC-nnn" in the old one's Links.
-- Limitation: Identified on is set when the row is created. Under assessment needs an open item in Links carrying the owner and next action, and Impact must be filled before the limitation leaves assessment. From Under assessment, exactly one of Accepted (needs a DEC id), Change requested (needs a CR id), Deferred (needs a REQ id with Phase = next phase), Resolved (needs evidence in Source or Links). The disposition is written once, in Disposition record; Links holds the other relationships (constrains, introduced by, the assessing open item).
+- Limitation: Identified on is set when the row is created. Under assessment needs an open item in Links carrying the owner and next action. Impact, at least two Options, each with an impact and a phase, and a Chosen option must be filled before the limitation leaves assessment by Accepted or Change requested; a vendor estimate is an input to Options, not a state. From Under assessment, exactly one of Accepted (the chosen option is to live with it or to work around it; needs a DEC id, and a manual workaround is also a PRC row), Change requested (the chosen option asks for a change; needs a CR id, created in Proposed when the phase is this one and in Deferred, with Phase = the named later phase, when it is not), Resolved (needs evidence in Source or Links; no options needed). The disposition is written in Disposition record; Links holds the other relationships (constrains, introduced by, the assessing open item). A limitation in Change requested whose CR ends Withdrawn or Rejected returns to Under assessment with a new open item, keeps the old id in Links as "previously dispositioned by CR-nnn", and is dispositioned again, usually Accepted with a DEC.
 - Risk: Identified on and Raised by are set when the row is created. Mitigating needs Trigger and Mitigation filled and a Due date for the next review; the review happens in the weekly routine, and whoever runs it updates Likelihood, Impact, Mitigation and the next Due. Realised is set when the Trigger is observed, and must create an OI. Retired needs a one-line reason in Mitigation. Mitigation is text on the row; there is no "mitigated by" link. Where the mitigation is a decision, Links carries "raised by DEC-nnn" or the DEC carries "raises", and that is enough.
 - Open item: Blocked needs Blocked by, either the id of the item it is waiting on or a short reason, and it is cleared when the item leaves Blocked. Closed needs a Resolution id and Closed on. If nothing was produced, the Resolution says "No record: <reason>" and that is acceptable but should be rare.
-- Change request: Raised on and Raised by are set when the row is created. Proposed means ours and being reasoned; Reason must be filled before it leaves Proposed. Options means we are designing the alternatives; at least two Options, each with an impact and a target phase, must be filled before it leaves Options, and a vendor estimate is an input here rather than a state of its own. For approval means the options are with our stakeholders; Consulted must be filled before it leaves. Approved means an option for delivery in this phase was chosen, and needs Chosen option, Approved by, Approved on and Phase. Submitted means handed to whoever will implement it; with Implemented by = Vendor, Submitted needs a Vendor ref. Delivered is set when the change is built and the requirement it delivers moves. Deferred means the chosen option is delivery in a later phase: create a requirement with Phase = that phase and MoSCoW set, write its id in Disposition record and "deferred as REQ-nnn" in Links, and close the change request; a change needed when that phase starts raises a new one. Workaround accepted means the change is not made and a decision records the manual process or workaround: write the DEC id in Disposition record and "dispositioned by DEC-nnn" in Links; where the workaround is a manual process, it is also a PRC row. Rejected means no change and no workaround, and the underlying need is Won't or Withdrawn. Approved, Deferred, Workaround accepted and Rejected each need Approved by and Approved on. A change request in Proposed, Options, For approval or Submitted must have an open item in Links carrying the owner, next action and due date; the row itself has none. The design produced for every option, including a workaround, lives on the CR page or in the design document, never on the row. A change with Implemented by = Both stays one row unless the vendor part and the internal part are approved separately, in which case it is two rows linked "part of".
+- Change request: Raised on and Raised by are set when the row is created, and Links carries "triggered by" the limitation or requirement whose chosen option asked for the change. A CR is created in Proposed when the change is for this phase, and in Deferred, with Phase = the named later phase and the Approved by and Approved on of the triggering choice, when it is not. Proposed means ours and being reasoned; Reason must be filled before it leaves Proposed. Options means we are designing the alternatives for making the change; at least two Options, each with an impact and a target phase, must be filled before it leaves Options, and a vendor estimate is an input here rather than a state of its own. For approval means the options are with our stakeholders; Consulted must be filled before it leaves. Approved means an option for delivery in this phase was chosen, and needs Chosen option, Approved by, Approved on and Phase. Submitted means handed to whoever will implement it; with Implemented by = Vendor, Submitted needs a Vendor ref. Delivered is set when the change is built and the requirement it delivers moves. Deferred means the change will be made in a named later phase and is waiting for it: it needs Phase, Approved by and Approved on, carries no open item, and is reviewed at phase planning, when it moves to Proposed or Options and the work resumes on the same row. A CR in For approval can also move to Deferred when the chosen option is delivery in a later phase. Withdrawn means we chose not to pursue the change after all, usually because the estimate made a workaround the better option; the triggering limitation returns to Under assessment, or the triggering requirement's open item reopens, and Links says why. Rejected means whoever approves or implements it said no; the triggering limitation returns to Under assessment, or the underlying need is Won't or Withdrawn. Approved, Deferred, Withdrawn and Rejected each need Approved by and Approved on. A change request in Proposed, Options, For approval or Submitted must have an open item in Links carrying the owner, next action and due date; the row itself has none. The design produced for every option lives on the CR page or in the design document, never on the row. A change with Implemented by = Both stays one row unless the vendor part and the internal part are approved separately, in which case it is two rows linked "part of".
 - Process: Draft on extraction. Described on and Raised by are set when the row is created. Owner, Implemented by and Vendor ref are not used; a process in Draft must have an open item in Links whose Owner is set, as for a Proposed decision. Confirmed when an SME or the owner of the driving open item agrees the description, and that open item closes with Resolution = the PRC id. Superseded when a later session gives a fuller description: create a new PRC and write "superseded by PRC-nnn" in the old one's Links. Retired when the process turns out not to be performed at all, with a one-line reason in Source or Links. Scope is tagged at Domain or Customer service level.
 
 ### 4.5 When to write a decision
@@ -114,7 +114,7 @@ A requirement says what the solution must do. A decision records a choice or an 
 
 - There was a real choice between viable options, and you picked one.
 - It constrains later design, such as a principle or standard other decisions must follow.
-- It accepts something: a limitation you live with, a risk you carry knowingly, a vendor constraint you design around.
+- It accepts something: a limitation you live with or work around, a risk you carry knowingly, a vendor constraint you design around. The decision's Rationale names the limitation's chosen option and the options it beat.
 - Someone will later ask "why did we do it this way?" and the answer is more than "the requirement said so".
 
 Do not write a decision to restate a requirement, to put a requirement in or out of a phase (that is the requirement's Phase and Agreed status), or for the vendor's routine implementation detail (that lives in their design document; add a Vendor ref on our requirement if it matters).
@@ -138,14 +138,12 @@ Links are written as `<relationship> <ID>`, several per item separated by semico
 | DEC | raises | RSK |
 | DEC | supersedes | DEC (the old decision also carries "superseded by") |
 | LIM | constrains | REQ |
-| LIM | dispositioned by | DEC, CR or REQ |
+| LIM | dispositioned by | DEC or CR (a later disposition keeps the earlier one as "previously dispositioned by") |
 | RSK | realised as | OI |
 | OI | resolves into | any |
 | CR | triggered by | LIM or REQ |
 | CR | delivers | REQ |
 | CR | part of | CR (when a Both change is split into a vendor row and an internal row) |
-| CR | deferred as | REQ (the requirement also carries "triggered by CR-nnn") |
-| CR | dispositioned by | DEC (on Workaround accepted) |
 | REQ | replaces | PRC-nnn/step n |
 | REQ | preserves | PRC-nnn/step n |
 | LIM | constrains | PRC |
@@ -174,10 +172,10 @@ One register per type. Every register has the header fields in 4.1 that apply to
 |---|---|
 | Requirements | ID, Title, Status, MoSCoW, Phase, Raised on, Owner, Scope, Implemented by, Vendor ref, Links, Source, Updated |
 | Decisions | ID, Title, Status, Rationale, Raised by, Consulted, Approved by, Decided on, Scope, Implemented by, Links, Source, Updated |
-| Limitations | ID, Title, Status, Identified on, Impact, Disposition record, Scope, Implemented by, Vendor ref, Links, Source, Updated |
+| Limitations | ID, Title, Status, Identified on, Impact, Options, Chosen option, Disposition record, Scope, Implemented by, Vendor ref, Links, Source, Updated |
 | Risks | ID, Title, Status, Identified on, Raised by, Likelihood, Impact, Trigger, Mitigation, Scope, Vendor ref, Links, Due, Source, Updated |
 | Open items | ID, Title, Status, Owner, Scope, Raised on, Raised by, Blocked by, Vendor ref, Links, Resolution, Next action, Due, Closed on, Updated |
-| Change requests | ID, Title, Status, Phase, Reason, Options, Chosen option, Consulted, Approved by, Approved on, Disposition record, CR page, Implemented by, Raised on, Raised by, Scope, Vendor ref, Links, Source, Updated |
+| Change requests | ID, Title, Status, Phase, Reason, Options, Chosen option, Consulted, Approved by, Approved on, CR page, Implemented by, Raised on, Raised by, Scope, Vendor ref, Links, Source, Updated |
 | Processes | ID, Title, Status, Trigger, Steps, Systems, Frequency, Described on, Raised by, Scope, Links, Source, Updated |
 
 Two supporting pages sit beside the registers: the scope taxonomy (6) and a conventions page that condenses sections 2 to 5 and 8 for people adding items by hand.
@@ -198,11 +196,10 @@ The meeting view is:
 
 Items with Phase = next phase, and change requests in Deferred, are excluded from this view. They appear on a separate next-phase view instead:
 
-1. Limitations in Deferred, with their disposition requirement.
+1. Change requests in Deferred, grouped by Phase, each with the limitation or requirement that triggered it.
 2. Requirements with Phase = next phase.
-3. Change requests in Deferred, with their disposition requirement.
 
-This is the chain from a limitation we are living with to its planned fix, and it is reviewed at phase planning rather than in the weekly meeting.
+This is the chain from a limitation we are living with to its planned fix, and it is reviewed at phase planning rather than in the weekly meeting. At phase planning each deferred CR for the starting phase moves to Proposed or Options and gets an open item.
 
 Anything on the outstanding view without an owner, a next action and a due date on it or on its open item is a defect in the register, not a discussion point.
 
@@ -213,15 +210,15 @@ Run against a proposed set of registers before writing them, and on request duri
 | Rule | Check |
 |---|---|
 | I1 Unique ids | No id appears twice across all registers. |
-| I2 Valid status | Every status is an exact 4.2 value for its type. Every requirement has a MoSCoW value and a Raised on date. Every limitation has an Identified on date, and Impact once it is past Identified. Every risk has an Identified on date, and Trigger and Mitigation once it is Mitigating. Every change request has Raised on and Raised by; Reason once past Proposed; at least two Options once past Options; Consulted once past For approval; Chosen option and Phase once Approved or in a terminal state other than Rejected; and Vendor ref once Submitted with Implemented by = Vendor. |
+| I2 Valid status | Every status is an exact 4.2 value for its type. Every requirement has a MoSCoW value and a Raised on date. Every limitation has an Identified on date; Impact once it is past Identified; and at least two Options and a Chosen option once it is Accepted or Change requested. Every risk has an Identified on date, and Trigger and Mitigation once it is Mitigating. Every change request has Raised on and Raised by; Reason once past Proposed; at least two Options once past Options; Consulted once past For approval; Chosen option once Approved, Submitted or Delivered; Phase once Approved, Submitted, Delivered or Deferred; and Vendor ref once Submitted with Implemented by = Vendor. |
 | I3 Owner present | Every non-terminal requirement and open item has an Owner that is a person, "Vendor: <name>" or "Joint". Every decision, limitation, risk, change request and process has Raised by. Decisions, limitations and change requests are exempt from Owner, but a decision in Proposed, a requirement in Draft, a limitation in Under assessment and a change request in Proposed, Options, For approval or Submitted must each have an open item in Links whose Owner is set, and so must a PRC in Draft. |
 | I4 Next action present | Every open item not Closed has Next action and Due. Every non-terminal risk has Due as its review date. |
 | I5 Scope valid | Every Scope is a value in the taxonomy. |
 | I6 Link targets exist | Every id in Links exists in some register. |
-| I7 Limitation disposition | Every LIM in a terminal state other than Resolved has a Disposition record id of the right type (Accepted needs DEC, Change requested needs CR, Deferred needs REQ), and no LIM in Identified or Under assessment has one. |
+| I7 Limitation disposition | Every LIM in Accepted or Change requested has a Disposition record id of the right type (Accepted needs a DEC in Accepted, Change requested needs a CR not in Withdrawn or Rejected), and no LIM in Identified or Under assessment has one. A LIM whose Links carry "previously dispositioned by" must name a CR in Withdrawn or Rejected there. |
 | I8 Decision supersession | Every DEC in Superseded has a "superseded by" link pointing at a DEC in Accepted or Proposed. |
 | I9 Open item resolution | Every OI in Closed has a Resolution and a Closed on date. Every OI in Blocked has Blocked by, and no OI in another state does. |
-| I10 Change request approval | Every CR in Approved, Submitted, Delivered, Deferred, Workaround accepted or Rejected has Approved by and Approved on. |
+| I10 Change request approval | Every CR in Approved, Submitted, Delivered, Deferred, Withdrawn or Rejected has Approved by and Approved on. |
 | I11 Decision approval | Every DEC in Accepted or Rejected has Approved by, Decided on and at least one Consulted entry. Every DEC has Raised by. |
 | I12 Implemented by | Every REQ, DEC, LIM and CR has Implemented by set to Vendor, Internal or Both. |
 | I13 Realised risk | Every RSK in Realised has a "realised as OI-nnn" link. |
@@ -229,7 +226,7 @@ Run against a proposed set of registers before writing them, and on request duri
 | I15 Stale proposals | DEC in Proposed, REQ in Draft and PRC in Draft older than 14 days are listed as warnings. |
 | I16 Decision without requirement | A DEC with no "addresses REQ" link and no "accepts" wording in its Rationale is listed as a warning: it usually means an unstated requirement or an unrecorded constraint. |
 | I17 Process steps | Every PRC step has a Retain value of Yes, No or Unknown, and every Retain of No has a reason after the semicolon. |
-| I18 Change request disposition | Every CR in Deferred has a Disposition record naming a REQ whose Phase is a later phase, and every CR in Workaround accepted has a Disposition record naming a DEC in Accepted. No CR in another state has one. |
+| I18 Deferred change request | Every CR in Deferred has a Phase naming a later phase and no open item in Links. Every CR has a "triggered by" link to a LIM or REQ, and a CR triggered by a LIM in Change requested is that LIM's Disposition record. |
 
 I1 to I14, I17 and I18 are failures. I15 and I16 are warnings.
 
@@ -244,7 +241,7 @@ During the meeting:
 4. New items raised in the meeting get an id from the next free number, Source = meeting date, and an owner before the meeting ends.
 
 Weekly:
-5. Check Limitations in Under assessment for more than 14 days. Each one either gets dispositioned or the open item that is assessing it gets a new Due.
+5. Check Limitations in Under assessment for more than 14 days. Each one either gets dispositioned, by choosing one of its Options, or the open item that is assessing it gets a new Due.
 5a. Review every risk whose Due has passed. Update Likelihood, Impact and Mitigation, set the next Due, or Retire it with a reason. If the Trigger has been seen, move it to Realised and raise an open item.
 6. Check vendor refs. Where the vendor has closed or changed an item we reference, update our item and add a note in Source.
 

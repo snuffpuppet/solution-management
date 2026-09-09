@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.7, 9 September 2026. Owner: Adam Moyes.
+Version 1.8, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -64,8 +64,8 @@ A passage saying a step is no longer performed becomes a claim of class `legacy`
 ### D4. Processes are a register type
 Current practice is recorded as PRC rows, one per end-to-end process with numbered steps, so the current state is knowable from Register: Processes and requirements can link to the step they replace or preserve.
 
-### D5. Change requests carry options and end in one of three outcomes
-Proposed, Options, For approval, Approved, Submitted, Delivered, or terminal Deferred (becomes a requirement for a named later phase), Workaround accepted (a decision records the workaround, and a manual workaround is also a process), or Rejected. Impact lives inside each option. Vendor estimates are inputs, not states.
+### D5. Whether to change is decided on the limitation; a change request is the change's whole life
+Revised 9 September 2026 (version 1.8), replacing the earlier form in which the CR carried the defer and workaround options and ended Workaround accepted. A limitation's Options hold the choice between living with it, working around it, and asking for a change now or in a named later phase; the decision that accepts it records the option chosen and the ones it beat. A change request is raised only when the chosen option asks for a change, in Proposed for this phase or straight into Deferred for a later one, and it carries the change until Delivered, Withdrawn or Rejected. Deferred is a waiting state reviewed at phase planning, not a terminal one, and no requirement is created to stand in for a deferred change. A CR's own Options are alternatives for making the change; impact lives inside each option, and vendor estimates are inputs, not states. A CR that ends Withdrawn or Rejected returns its limitation to Under assessment for a second disposition. Consequence: the next-phase view is deferred CRs by phase, and a CR whose chosen option would have been "do nothing" cannot exist.
 
 ### D6. The runner records its model and derives a mode
 At T0 and at every later stage the transcript runner writes its model id to the state file. Mode is standard for Fable and strict for every other model, overridable by the human. Only T2 differs by mode: strict mode downgrades more classifications to inferred. Each claim carries `runner_model` and `runner_mode`. The Audit table's questions raised and classes changed columns are the measure of a model's effect. Each Audit row also carries the runner document version, so the same columns measure the effect of a document edit (P12).
