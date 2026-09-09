@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -u
+f="$(dirname "$0")/../solution-register-model.md"
+fail=0
+need() { grep -qF -- "$1" "$f" && echo "ok   $1" || { echo "FAIL $1"; fail=1; }; }
+need "Version 2.14, 9 September 2026"
+need "| Current system | The system we use today does, or does not, do X. | SYS"
+need "| System | SYS | Draft, Confirmed, Superseded*, Retired* |"
+need "| System | An SME describes a system in use today"
+need "- System: Draft on extraction."
+need "| REQ | replaces | SYS-nnn/fact n |"
+need "| PRC | uses | SYS |"
+need "| Systems | ID, Title, Status, Fate, Facts, Used by, Described on, Raised by, Scope, Links, Source, Updated |"
+need "| I19 System facts |"
+need "**Discovery or current system?**"
+need "| Current practice | This is how we do X today. | PRC |"
+need "| Process | PRC | Draft, Confirmed, Superseded*, Retired* |"
+need "| Process | An SME describes work performed today."
+need "- Process: Draft on extraction."
+need "| REQ | replaces | PRC-nnn/step n |"
+need "| REQ | preserves | PRC-nnn/step n |"
+need "| LIM | constrains | PRC |"
+need "| OI | clarifies | PRC |"
+need "| PRC | superseded by | PRC |"
+need "| Processes | ID, Title, Status, Trigger, Steps, Systems, Frequency, Described on, Raised by, Scope, Links, Source, Updated |"
+need "7. Processes and systems in Draft older than 14 days, measured from Described on."
+need "| I17 Process steps |"
+need "a PRC or SYS in Draft"
+need "change requests, processes or systems, which carry Raised by instead"
+need "Not used on processes."
+exit $fail
