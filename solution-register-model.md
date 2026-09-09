@@ -1,6 +1,6 @@
 # Solution register model
 
-Version 2.12, 9 September 2026. Owner: Adam Moyes.
+Version 2.13, 9 September 2026. Owner: Adam Moyes.
 
 This file describes how we track the artifacts of solution architecture on a project where we are the design authority and a vendor builds the platform. It is tool-agnostic. It says what the item types are, how they relate, how each one moves, and what a healthy register looks like. It does not say how to build the registers in any particular tool; that is in `solution-register-runner.md`.
 
@@ -41,7 +41,7 @@ Not every item begins with a requirement. Each item records where it came from, 
 
 ## 3. Entry points
 
-Five kinds of thing come in, and the question beside each one picks the type.
+Six kinds of thing come in, and the question beside each one picks the type.
 
 | Entry | Question | Usually becomes |
 |---|---|---|
@@ -50,8 +50,11 @@ Five kinds of thing come in, and the question beside each one picks the type.
 | Ask | A stakeholder wants X changed. | OI, then CR or REQ |
 | Event | A risk lands, an assumption fails, a review finds a gap. | OI, then whatever record the work produces |
 | Current practice | This is how we do X today. | PRC |
+| Current system | The system we use today does, or does not, do X. | SYS; never a LIM, since a limitation is about the solution |
 
-Asks and events are work first and record later. Requirements, discoveries and current practice can go straight to a record.
+Asks and events are work first and record later. Requirements, discoveries, current practice and current systems can go straight to a record.
+
+**Discovery or current system?** Ask whose system the speaker means. A shortfall of a system in use today, one the solution replaces, retains or integrates with, is a fact about that system and goes on its SYS row. It becomes a requirement only through commitment language about the solution, exactly as a process step does. A shortfall of the solution being built, or of the vendor's platform where it leaves a need unmet, is a limitation. Where the passage does not name the system, that is a question, never a guess.
 
 ## 4. Item types
 
@@ -59,10 +62,10 @@ Asks and events are work first and record later. Requirements, discoveries and c
 
 | Field | Rule |
 |---|---|
-| ID | Type prefix plus zero-padded number, e.g. REQ-014, DEC-003, LIM-021, RSK-007, OI-045, CR-002. Never reused. |
+| ID | Type prefix plus zero-padded number, e.g. REQ-014, DEC-003, LIM-021, RSK-007, OI-045, CR-002, PRC-004, SYS-002. Never reused. |
 | Title | One line, specific. |
 | Status | One of the values for the type (4.2). |
-| Owner | A named person on our side, or "Vendor" plus a named vendor contact, or "Joint". Required on every requirement and open item that is not in a terminal state. Not used on decisions, limitations, risks, change requests or processes, which carry Raised by instead. While a decision is Proposed, a limitation is Under assessment or a change request is not yet Approved, the open item driving it carries the owner. Risks have no standing owner; they are reviewed on their review date by the routine in section 10, and a realised risk raises an open item. |
+| Owner | A named person on our side, or "Vendor" plus a named vendor contact, or "Joint". Required on every requirement and open item that is not in a terminal state. Not used on decisions, limitations, risks, change requests, processes or systems, which carry Raised by instead. While a decision is Proposed, a limitation is Under assessment or a change request is not yet Approved, the open item driving it carries the owner. Risks have no standing owner; they are reviewed on their review date by the routine in section 10, and a realised risk raises an open item. |
 | Scope | One value from the scope taxonomy (6). |
 | Implemented by | Vendor, Internal or Both. Whose build the item lands in. Required on requirements, decisions, limitations and change requests. Optional on risks and open items. Not used on processes. |
 | Vendor ref | The vendor's id for the corresponding item, if one exists. Otherwise blank. Not used on decisions; a vendor document reference goes in Source. Not used on processes. |
@@ -84,6 +87,7 @@ Terminal states are marked *.
 | Risk | RSK | Identified, Mitigating, Realised*, Retired* | Identified on (date), Raised by (person, or the review it came from), Likelihood (L/M/H), Impact (L/M/H), Trigger (the observable event that says the risk has become real), Mitigation (what is being done, as text) |
 | Open item | OI | Open, In progress, Blocked, Closed* | Raised on (date), Raised by (person, or the meeting or review it came from), Blocked by (an id or a short reason, while Blocked), Resolution (id of the record it produced or changed), Closed on (date) |
 | Change request | CR | Proposed, Options, For approval, Approved, Submitted, Deferred, Delivered*, Withdrawn*, Rejected* | Phase (the named phase the change lands in; set when the CR is created from a limitation's chosen option, or when its own option is chosen), Raised on (date), Raised by (person, or the meeting or review it came from), Reason (one line: what the change buys), Options (numbered list, each `n. <option>; impact: <cost and time, or effort and who>; phase: <phase>`; every option is a way of making the change, since whether to change was settled on the limitation or requirement that triggered it), Chosen option (the option number), Consulted (vendor, SMEs, stakeholder groups who had input), Approved by, Approved on, CR page (optional link to the page holding the full option designs) |
+| System | SYS | Draft, Confirmed, Superseded*, Retired* | Fate (Replaced, Retained, Integrated or Unknown: what the solution does with it), Facts (numbered list; each fact is `n. <fact> [Stated by: <person>]`, one sentence in the speaker's words about what the system does, holds or cannot do), Used by (PRC ids whose Systems name it), Described on (date of the session), Raised by (the SMEs who described it; "Unattributed" if none) |
 | Process | PRC | Draft, Confirmed, Superseded*, Retired* | Trigger (what starts the process, one line), Steps (numbered list; each step is `n. <step> [Retain: Yes/No/Unknown] [Actor: <role or person>]`, and a Retain of No carries the SME's reason after a semicolon inside the brackets), Systems (touched today, comma separated), Frequency (as stated by the SME, blank if not stated), Described on (date of the session), Raised by (the SMEs who described it, from transcript attribution; "Unattributed" if none) |
 
 ### 4.3 Use it when
@@ -96,6 +100,7 @@ Terminal states are marked *.
 | Risk | Something might go wrong, or an assumption is unverified and would hurt if wrong. A record, not a piece of work: it carries who raised it and a review date, and the weekly routine reviews it. Mitigation actions are open items with their own owners. Anyone who sees the trigger happen raises an open item and the risk moves to Realised. |
 | Open item | Someone must do something before a record can change. The only thing you work. |
 | Change request | We have decided to ask for a change to agreed scope or design, now or in a named later phase, and it costs time, money or effort. One row for the whole life of the change, ours from Proposed or Deferred, with the vendor's number in Vendor ref once they assign one. Links says what triggered it; Reason says what it buys, for the reader in the approval meeting. Whether to change at all is not a CR question: it is answered on the limitation's Options or by the requirement's open item. |
+| System | An SME describes a system in use today: what it does, what it holds, what it cannot do. One row per named system, with facts inside the row, so a fact is addressed as SYS-nnn/fact n. A shortfall of a current system is a fact here, never a limitation, because the limitation register is about the solution and its disposition queue must not carry the old system's defects. The vendor's platform as it stands before our build is also a system, with Fate Retained; a platform shortfall that leaves a need unmet is a limitation as well, linked "constrains". |
 | Process | An SME describes work performed today. One row per named end-to-end process, with steps inside the row, so the register stays readable in a meeting. A step is addressed as PRC-nnn/step n. Legacy steps no longer performed are never recorded here; current steps the SME says are not needed are recorded with Retain: No and the reason, and raise no requirement on their own. |
 
 ### 4.4 Transition rules
@@ -106,6 +111,7 @@ Terminal states are marked *.
 - Risk: Identified on and Raised by are set when the row is created. Mitigating needs Trigger and Mitigation filled and a Due date for the next review; the review happens in the weekly routine, and whoever runs it updates Likelihood, Impact, Mitigation and the next Due. Realised is set when the Trigger is observed, and must create an OI. Retired needs a one-line reason in Mitigation. Mitigation is text on the row; there is no "mitigated by" link. Where the mitigation is a decision, Links carries "raised by DEC-nnn" or the DEC carries "raises", and that is enough.
 - Open item: Blocked needs Blocked by, either the id of the item it is waiting on or a short reason, and it is cleared when the item leaves Blocked. Closed needs a Resolution id and Closed on. If nothing was produced, the Resolution says "No record: <reason>" and that is acceptable but should be rare.
 - Change request: Raised on and Raised by are set when the row is created, and Links carries "triggered by" the limitation or requirement whose chosen option asked for the change. A CR is created in Proposed when the change is for this phase, and in Deferred, with Phase = the named later phase and the Approved by and Approved on of the triggering choice, when it is not. Proposed means ours and being reasoned; Reason must be filled before it leaves Proposed. Options means we are designing the alternatives for making the change; at least two Options, each with an impact and a target phase, must be filled before it leaves Options, and a vendor estimate is an input here rather than a state of its own. For approval means the options are with our stakeholders; Consulted must be filled before it leaves. Approved means an option for delivery in this phase was chosen, and needs Chosen option, Approved by, Approved on and Phase. Submitted means handed to whoever will implement it; with Implemented by = Vendor, Submitted needs a Vendor ref. Delivered is set when the change is built and the requirement it delivers moves. Deferred means the change will be made in a named later phase and is waiting for it: it needs Phase, Approved by and Approved on, carries no open item, and is reviewed at phase planning, when it moves to Proposed or Options and the work resumes on the same row. A CR in For approval can also move to Deferred when the chosen option is delivery in a later phase. Withdrawn means we chose not to pursue the change after all, usually because the estimate made a workaround the better option; the triggering limitation returns to Under assessment, or the triggering requirement's open item reopens, and Links says why. Rejected means whoever approves or implements it said no; the triggering limitation returns to Under assessment, or the underlying need is Won't or Withdrawn. Approved, Deferred, Withdrawn and Rejected each need Approved by and Approved on. A change request in Proposed, Options, For approval or Submitted must have an open item in Links carrying the owner, next action and due date; the row itself has none. The design produced for every option lives on the CR page or in the design document, never on the row. A change with Implemented by = Both stays one row unless the vendor part and the internal part are approved separately, in which case it is two rows linked "part of".
+- System: Draft on extraction. Described on and Raised by are set when the row is created. Owner, Implemented by and Vendor ref are not used; a system in Draft must have an open item in Links whose Owner is set, as for a process. Fate is Unknown until an SME or the architect states it, and the open item that confirms the row confirms Fate too. Confirmed, Superseded and Retired follow the process rules. Scope is tagged at Domain level unless the system serves one customer service.
 - Process: Draft on extraction. Described on and Raised by are set when the row is created. Owner, Implemented by and Vendor ref are not used; a process in Draft must have an open item in Links whose Owner is set, as for a Proposed decision. Confirmed when an SME or the owner of the driving open item agrees the description, and that open item closes with Resolution = the PRC id. Superseded when a later session gives a fuller description: create a new PRC and write "superseded by PRC-nnn" in the old one's Links. Retired when the process turns out not to be performed at all, with a one-line reason in Source or Links. Scope is tagged at Domain or Customer service level.
 
 ### 4.5 When to write a decision
@@ -146,6 +152,11 @@ Links are written as `<relationship> <ID>`, several per item separated by semico
 | CR | part of | CR (when a Both change is split into a vendor row and an internal row) |
 | REQ | replaces | PRC-nnn/step n |
 | REQ | preserves | PRC-nnn/step n |
+| REQ | replaces | SYS-nnn/fact n |
+| REQ | preserves | SYS-nnn/fact n |
+| PRC | uses | SYS |
+| LIM | constrains | REQ, where the LIM is a platform shortfall; a SYS row for the platform carries the same fact |
+| SYS | superseded by | SYS |
 | LIM | constrains | PRC |
 | OI | clarifies | PRC |
 | PRC | superseded by | PRC |
@@ -166,7 +177,7 @@ The taxonomy is kept on its own page and is the single source of allowed Scope v
 
 ## 7. Register layout
 
-One register per type. Every register has the header fields in 4.1 that apply to its type as columns, in this order, with the type-specific fields inserted after Status. Only requirements and open items carry an Owner. Requirements, because it names who can say the need is met; open items, because they are the work. Every other type carries Raised by instead, and the work that moves it lives on an open item. Processes carry neither Owner nor Implemented by nor Vendor ref. Risks carry Due as a review date but no Next action. Decisions carry no Vendor ref. Open items carry no Source; Raised on and Raised by do that job.
+One register per type. Every register has the header fields in 4.1 that apply to its type as columns, in this order, with the type-specific fields inserted after Status. Only requirements and open items carry an Owner. Requirements, because it names who can say the need is met; open items, because they are the work. Every other type carries Raised by instead, and the work that moves it lives on an open item. Processes and systems carry neither Owner nor Implemented by nor Vendor ref. Risks carry Due as a review date but no Next action. Decisions carry no Vendor ref. Open items carry no Source; Raised on and Raised by do that job.
 
 | Register | Columns |
 |---|---|
@@ -177,6 +188,7 @@ One register per type. Every register has the header fields in 4.1 that apply to
 | Open items | ID, Title, Status, Owner, Scope, Raised on, Raised by, Blocked by, Vendor ref, Links, Resolution, Next action, Due, Closed on, Updated |
 | Change requests | ID, Title, Status, Phase, Reason, Options, Chosen option, Consulted, Approved by, Approved on, CR page, Implemented by, Raised on, Raised by, Scope, Vendor ref, Links, Source, Updated |
 | Processes | ID, Title, Status, Trigger, Steps, Systems, Frequency, Described on, Raised by, Scope, Links, Source, Updated |
+| Systems | ID, Title, Status, Fate, Facts, Used by, Described on, Raised by, Scope, Links, Source, Updated |
 
 Two supporting pages sit beside the registers: the scope taxonomy (6) and a conventions page that condenses sections 2 to 5 and 8 for people adding items by hand.
 
@@ -192,7 +204,7 @@ The meeting view is:
 4. Change requests in Proposed, Options or For approval.
 5. Decisions in Proposed older than 14 days.
 6. Requirements in Draft older than 14 days, measured from Raised on.
-7. Processes in Draft older than 14 days, measured from Described on.
+7. Processes and systems in Draft older than 14 days, measured from Described on.
 
 Items with Phase = next phase, and change requests in Deferred, are excluded from this view. They appear on a separate next-phase view instead:
 
@@ -211,7 +223,7 @@ Run against a proposed set of registers before writing them, and on request duri
 |---|---|
 | I1 Unique ids | No id appears twice across all registers. |
 | I2 Valid status | Every status is an exact 4.2 value for its type. Every requirement has a MoSCoW value and a Raised on date. Every limitation has an Identified on date; Impact once it is past Identified; and at least two Options and a Chosen option once it is Accepted or Change requested. Every risk has an Identified on date, and Trigger and Mitigation once it is Mitigating. Every change request has Raised on and Raised by; Reason once past Proposed; at least two Options once past Options; Consulted once past For approval; Chosen option once Approved, Submitted or Delivered; Phase once Approved, Submitted, Delivered or Deferred; and Vendor ref once Submitted with Implemented by = Vendor. |
-| I3 Owner present | Every non-terminal requirement and open item has an Owner that is a person, "Vendor: <name>" or "Joint". Every decision, limitation, risk, change request and process has Raised by. Decisions, limitations and change requests are exempt from Owner, but a decision in Proposed, a requirement in Draft, a limitation in Under assessment and a change request in Proposed, Options, For approval or Submitted must each have an open item in Links whose Owner is set, and so must a PRC in Draft. |
+| I3 Owner present | Every non-terminal requirement and open item has an Owner that is a person, "Vendor: <name>" or "Joint". Every decision, limitation, risk, change request, process and system has Raised by. Decisions, limitations and change requests are exempt from Owner, but a decision in Proposed, a requirement in Draft, a limitation in Under assessment and a change request in Proposed, Options, For approval or Submitted must each have an open item in Links whose Owner is set, and so must a PRC or SYS in Draft. |
 | I4 Next action present | Every open item not Closed has Next action and Due. Every non-terminal risk has Due as its review date. |
 | I5 Scope valid | Every Scope is a value in the taxonomy. |
 | I6 Link targets exist | Every id in Links exists in some register. |
@@ -226,14 +238,15 @@ Run against a proposed set of registers before writing them, and on request duri
 | I15 Stale proposals | DEC in Proposed, REQ in Draft and PRC in Draft older than 14 days are listed as warnings. |
 | I16 Decision without requirement | A DEC with no "addresses REQ" link and no "accepts" wording in its Rationale is listed as a warning: it usually means an unstated requirement or an unrecorded constraint. |
 | I17 Process steps | Every PRC step has a Retain value of Yes, No or Unknown, and every Retain of No has a reason after the semicolon. |
+| I19 System facts | Every SYS has a Fate of Replaced, Retained, Integrated or Unknown, and every fact carries Stated by. Every name in a PRC's Systems field matches a SYS Title, or is listed as a warning. No LIM Title names a system whose SYS Fate is Replaced. |
 | I18 Deferred change request | Every CR in Deferred has a Phase naming a later phase and no open item in Links. Every CR has a "triggered by" link to a LIM or REQ, and a CR triggered by a LIM in Change requested is that LIM's Disposition record. |
 
-I1 to I14, I17 and I18 are failures. I15 and I16 are warnings.
+I1 to I14, I17, I18 and the first and third parts of I19 are failures. I15, I16 and the unmatched-system part of I19 are warnings.
 
 ## 10. Maintenance routine
 
 Before each project meeting:
-1. Regenerate the outstanding view (8) from the seven registers.
+1. Regenerate the outstanding view (8) from the eight registers.
 2. Run the integrity rules. Fix I3 and I4 failures before the meeting, since those are the ones that make the meeting unproductive.
 
 During the meeting:

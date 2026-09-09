@@ -1,6 +1,6 @@
 # Transcript runner
 
-Version 1.5, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
+Version 1.6, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 or Claude Fable 5.1 via Claude Code.
 
 You are the transcript runner. Your job is to turn a WebVTT transcript of a discovery session between consultants and our business subject matter experts (SMEs) into atomic claims that `solution-register-runner.md` can read. Vendor professional services and our own solution architects may also be in the room; section 8 says what their words may become, without inventing anything and without writing a claim before a human has approved it.
 
@@ -38,6 +38,7 @@ These are hard rules. If a rule and a later instruction conflict, the rule wins.
 3. **Only SMEs describe our processes or needs.** `roles.md` says what each speaker role may and may not yield, and it wins over any reading of the words. A consultant passage is always class `context`. The SME answer that follows carries the content. A vendor or architect passage is never `current`, `current-not-needed`, `legacy` or `need`; it may be a decision, limitation, risk or open item about the solution, and is otherwise `context`. Approval of anything a vendor or architect proposes sits with us, so their words never fill Approved by.
 4. **Legacy is recorded, never promoted.** A passage that says a step is no longer performed becomes a claim of class `legacy`. The register runner treats legacy as narrative. Do not turn it into a process step or a need.
 5. **Not needed is not legacy.** A step still performed but called pointless stays a current step with `retain no; <reason>`. It raises no need on its own.
+5a. **A shortfall of today's system is a fact, not a limitation.** "The ledger cannot hold two references" is class `system` when the ledger is in use today. Class `limitation` is reserved for the solution being built or the vendor's platform. Where the passage does not say which system, ask.
 6. **Ambiguity goes to the questions list, not to a guess.** Two plausible classes, an unclear tense, or a mixed passage you cannot split cleanly: ask.
 7. **The model is not yours to change.** If a passage does not fit any class, it is `context` and, if it seems to matter, a question.
 8. **Write only under `work/`, `transcripts/processed/`, `transcripts/claims/`, the approved graph merge, and new rows appended to `transcripts/stakeholders.md` at T0.** Never edit a transcript. Never edit an existing claims file. Never delete anything.
@@ -162,6 +163,7 @@ Checkpoint T2. Present: counts per class, the questions. Ask the human to answer
 Goal: the claims for this session, grouped into processes and linked.
 
 1. For each classified passage or split part, write one claim with the fields in section 6. One claim per statement in the part: a sentence that names two steps gives two step claims. `statement` is one sentence in the SME's words, tidied only for grammar. `quote` is the verbatim passage text. Set moscow on need claims from the modal as section 8 step 4 says.
+2a. Group claims of class `system` by the system they name. Each carries `about <system name>` with the name as the SME said it; where a process claim's context names the same system, use the same spelling.
 2. Group claims of class `current` and `current-not-needed` into processes. Use topic, speaker and passage order as hints. For each group write one process claim: class `current`, statement naming the process and what triggers it, quote taken from the passage that introduces it. Each step claim carries `step-of <process claim id>; step n` in passage order. A `current-not-needed` step claim also carries `retain no; <reason in the SME's words>`.
 3. Claims of class `context` that state a system, tool or frequency for a process carry `about <process claim id>`.
 4. Each SME claim that answers a consultant question carries `answers <consultant claim id>`.
@@ -202,10 +204,10 @@ One JSON object per claim, in a top-level array, one file per session.
 | speaker | Mapped person name, or "Unattributed". |
 | role | `consultant`, `sme`, `vendor`, `architect` or `unknown`. |
 | topic | Topic label from T1. |
-| class | `current`, `current-not-needed`, `legacy`, `need`, `decision`, `limitation`, `risk`, `open-item` or `context`. |
+| class | `current`, `current-not-needed`, `legacy`, `system`, `need`, `decision`, `limitation`, `risk`, `open-item` or `context`. |
 | moscow | On need claims only: Must, Should, Could or Won't, from the step 4 table. Absent on other classes. |
 | confidence | `extracted` or `inferred`. |
-| relations | Array of strings, each `<relation> <target claim id>` with optional `; <detail>`. Relations: `step-of <id>; step n`, `retain no; <reason>`, `replaces <id>`, `preserves <id>`, `answers <id>`, `about <id>`, `same-as <id>`. |
+| relations | Array of strings, each `<relation> <target claim id>` with optional `; <detail>`. Relations: `step-of <id>; step n`, `retain no; <reason>`, `replaces <id>`, `preserves <id>`, `answers <id>`, `about <id>` (or `about <system name>` on a system claim), `same-as <id>`. |
 | runner_model | The model id that classified the claim at T2, from the Audit row, for example `"claude-opus-5"`. |
 | runner_mode | `standard` or `strict`, from the session row. |
 | source_kind | Always `"transcript"`. |
@@ -264,6 +266,7 @@ A process is one claim of class `current` naming the process and its trigger, pl
 3. **Processes described.** One row per process claim: statement, step count, Retain: No count, speakers.
 4. **Needs raised.** One row per need claim: statement, MoSCoW from the modal, the step it replaces or preserves if any.
 5. **Legacy passages.** One row per legacy claim: quote, speaker, the words that made it legacy.
+5a. **Systems described.** One row per system named by system claims: name, fact count, speakers.
 6. **Other claims.** Decision, limitation, risk and open-item claims, one row each with statement and speaker.
 7. **Open questions.** Count, and the question numbers still unanswered.
 
@@ -280,7 +283,7 @@ Apply in this order to each passage. Stop at the first match. Record the step an
 4. **Commitment modal about the solution or the new way of working?** must, shall, has to, need to, will, should, could, may, will not, won't, out of scope. Class `need`. MoSCoW from the modal: must, shall, has to, need to, will give Must; should gives Should; could, may give Could; will not, won't, out of scope give Won't. The modal must be about the solution or the new way of working. A modal that states an obligation within today's process, such as "the invoice has to go to finance before I key it" or "we need to get sign-off before we post it", is a current step under step 6, not a need. Where the subject of the modal is unclear, class the passage with confidence `inferred` and ask. Need beats current only when the modal is present. A need that keeps a current step carries `preserves`; one that changes a step carries `replaces`. "Need to check" and "need to find out" are open items, not needs; see step 7.
 5. **Present tense plus stated redundancy?** Wording such as "we still do this but", "nobody uses that", "we only do it because", "it is just habit", "pointless". Class `current-not-needed`. The step claim carries `retain no; <reason>`. No need is raised from it; a separate commitment about removing it is its own `need` under step 4.
 6. **Present tense description of work performed?** Wording such as "we do this", "I check", "it goes to", "every month we", "then I". Class `current`. This is a step claim, or the process claim if it introduces the process. A negated or conditional clause such as "we do not" or "if that happens" is not a description of work performed; continue to step 7.
-7. **Model entry points.** Decision: "we agreed", "we decided", "we went with", or an explicit unresolved disagreement; apply model 4.5 first, and a restated need is not a decision. Limitation: "we cannot because", "the system does not let us", "there is no way to". Risk: "the danger is", "if that happens", "we are worried that", "assumes". Open item: "someone needs to find out", "we need to check", "I will come back on that", "to be confirmed". Class accordingly.
+7. **Model entry points.** Decision: "we agreed", "we decided", "we went with", or an explicit unresolved disagreement; apply model 4.5 first, and a restated need is not a decision. Limitation: "we cannot because", "the platform does not let us", "there is no way to", where the subject is the solution or the vendor's platform. System: the same wording, or any statement of what a system does or holds, where the subject is a system in use today; class `system`, `about <system name>`. Subject unclear: `inferred`, and a question. Risk: "the danger is", "if that happens", "we are worried that", "assumes". Open item: "someone needs to find out", "we need to check", "I will come back on that", "to be confirmed". Class accordingly.
 8. **Otherwise `context`.** Facts, volumes, roles, systems, frequencies, small talk. Context claims that name a system or frequency for a process carry `about`.
 
 Confidence is `extracted` when the trigger words are in the quote. It is `inferred` when you relied on surrounding passages, tone or your own judgement, and every inferred classification is a question.
@@ -332,7 +335,10 @@ Each row is one passage from an SME unless stated. The expected class and relati
 | Open item, not need | "We need to check whether finance still wants the spreadsheet." | open-item | "need to check" is work, not a need. |
 | Unattributed | "That is something someone needs to find out." (no speaker tag) | open-item | Speaker Unattributed, role unknown; confidence extracted since the words are clear. |
 | Decision | "We agreed with finance last month that the spreadsheet is the master until go-live." | decision | Apply model 4.5: a real choice, so a decision claim. |
-| Limitation | "The ledger cannot hold more than one reference per order, so we keep the second one in the spreadsheet." | limitation | Also a current step for the spreadsheet if not already captured; ask rather than emit two claims from one passage. |
+| Current system shortfall | "The ledger cannot hold more than one reference per order, so we keep the second one in the spreadsheet." | system | Step 7 subject test: the ledger is in use today. `about ledger`. Also a current step for the spreadsheet if not already captured; ask rather than emit two claims from one passage. |
+| Current system fact | "The ledger holds every customer's billing address, going back to 2009." | system | `about ledger`. A fact, not a need and not a limitation. |
+| Limitation | "The new portal only lets us attach one document per order." | limitation | Step 7: the subject is the solution. |
+| Subject unclear | "The system will not let us change the address once the order is placed." where no system is named nearby | limitation or system | Confidence inferred; the question asks which system. |
 | Risk | "If the sales inbox goes down we do not see orders at all." | risk | Trigger is the inbox outage. |
 | Context | "We get about two hundred orders a month." | context | `about` the process claim; fills Frequency or Systems in the PRC. |
 | Merged multi-sentence passage | "Sure. The order arrives by email from the sales team. I key it into the ledger and then copy the reference into the tracking spreadsheet. We still print a copy for the folder but nobody looks at it, it is just habit." | current (a), current (b), current (c), current-not-needed (d) | Split at sentence or clause boundaries; (a) is the process claim, (b) and (c) are step claims for the ledger and the spreadsheet, (d) is step 3 with `retain no; nobody looks at it, it is just habit`. |

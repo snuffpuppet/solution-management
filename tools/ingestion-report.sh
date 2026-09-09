@@ -63,8 +63,8 @@ echo "## Claims by class"
 echo
 echo "Inferred share is the fraction of written claims the runner marked inferred before the human answered; it shows how often the model asked rather than asserted."
 echo
-echo "| Session | Model | Mode | Claims | current | current-not-needed | legacy | need | decision | limitation | risk | open-item | context | Inferred share |"
-echo "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"
+echo "| Session | Model | Mode | Claims | current | current-not-needed | legacy | system | need | decision | limitation | risk | open-item | context | Inferred share |"
+echo "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"
 for f in "$claims"/T*.json; do
   [ -f "$f" ] || continue
   sid=$(basename "$f" .json)
@@ -73,7 +73,7 @@ for f in "$claims"/T*.json; do
   mode=$(grep -o '"runner_mode": "[^"]*"' "$f" | head -1 | cut -d'"' -f4)
   inferred=$(grep -c '"confidence": "inferred"' "$f" || true)
   row="| $sid | ${model:-unknown} | ${mode:-unknown} | $total |"
-  for c in current current-not-needed legacy need decision limitation risk open-item context; do
+  for c in current current-not-needed legacy system need decision limitation risk open-item context; do
     n=$(grep -c "\"class\": \"$c\"" "$f" || true)
     row="$row $n |"
   done

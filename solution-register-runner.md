@@ -1,6 +1,6 @@
 # Solution register runner
 
-Version 2.15, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
+Version 2.16, 9 September 2026. Owner: Adam Moyes. For Claude Opus 5 via Claude Code.
 
 You are the runner. Your job is to read a knowledge base of atomic claims, extract the items it holds according to the model in `solution-register-model.md`, and produce the design register pages in a Confluence space, without inventing anything and without writing before a human has approved what you will write.
 
@@ -184,11 +184,12 @@ Apply in this order to each claim. Stop at the first match. Record the reason.
 
 0. **Transcript claim of class legacy or context?** Narrative. Never an item. A legacy claim is listed in `02-mapping.md` with the reason "legacy practice" so the discard is traceable.
 0a. **Transcript claim of class current or current-not-needed?** Candidate PRC. One PRC per process claim. Its step claims (those carrying `step-of` this process) become the Steps field in `step n` order, with Retain: Yes unless the step claim carries `retain no; <reason>`, in which case Retain: No and the reason. Actor comes from the step claim's wording where it names one, or is the speaker when the step is in the first person. Raised by is the speaker names on the claims; Described on is the session date; Source lists the claim ids. Context claims with an `about` relation to the process fill Systems and Frequency. A process claim with a `same-as` relation to an earlier session's process claim is an update to that PRC candidate, not a new one; record it and add a question. Raise one open item per PRC candidate titled "Confirm PRC-pnnn with <SME names>", Raised on the session date, Raised by the transcript runner session id, Owner blank, and add one question per session asking who owns confirmation. This satisfies I3 without inventing an owner.
+0a1. **Transcript claim of class system?** Candidate SYS, one per system named in the claims' `about` relation or statement. Each claim becomes one fact in the Facts field in passage order, with Stated by = the speaker. Used by lists the PRC candidates whose Systems name it. Fate is Unknown unless a claim states what the solution does with the system. Raised by, Described on, Source and the confirming open item follow the PRC rule. A system claim whose wording is a shortfall is still a fact, never a LIM candidate.
 0b. **Transcript claim of class need, decision, limitation, risk or open-item?** Continue at the step below that matches the class, using the class as the starting proposal. A need claim carrying `replaces` or `preserves` gives the REQ a Links entry "replaces PRC-pnnn/step n" or "preserves PRC-pnnn/step n" once both sides have provisional ids. A need claim's moscow field fills MoSCoW on the REQ.
 
 1. **Is it an existing requirement claim, or does it state a need?** Wording such as "must", "shall", "needs to", "is required to", or a requirement id. Candidate REQ. Owner is the person who stated it if the claim says who; otherwise blank.
 2. **Does it record a choice between options, a principle other design must follow, or an accepted constraint?** Wording such as "we chose", "instead of", "will use X rather than Y", "must always", "because the platform requires". Candidate DEC. Apply model 4.5: a claim that merely restates a requirement or describes routine vendor implementation is narrative, not a decision. A transcript claim whose role is `vendor` or `architect` follows the Register effect column of `roles.md`: a Proposed DEC with Raised by = the speaker; where the role is `vendor`, Consulted includes "vendor: <name>". Approved by is never filled from a vendor or architect claim, because approval sits with us.
-3. **Does it say the solution will not do, or does differently, something needed?** Wording such as "does not support", "is limited to", "cannot", "only one", "not available in this phase". Candidate LIM. If the claim also names the need, that need is a REQ candidate if not already present, and the LIM constrains it. A transcript claim of role `vendor` is the usual source: Raised by = the speaker, Source = the claim id. A transcript claim of role `vendor` is the usual source: Raised by = the speaker, Source = the claim id.
+3. **Does it say the solution will not do, or does differently, something needed?** Wording such as "does not support", "is limited to", "cannot", "only one", "not available in this phase". Apply the subject test first: if the system named is one in use today, or the claim is a transcript claim of class `system`, it is a SYS fact under 0a1 and not a LIM, whatever the wording. Otherwise candidate LIM. If the claim also names the need, that need is a REQ candidate if not already present, and the LIM constrains it. A transcript claim of role `vendor` is the usual source: Raised by = the speaker, Source = the claim id. Where the subject cannot be told from the claim, ask.
 4. **Does it describe something that might go wrong, or an unverified assumption with consequences?** Wording such as "risk", "may fail", "assumes", "depends on", "to be confirmed". Candidate RSK. "To be confirmed" with a clear action and no consequence is an OI instead.
 5. **Does it describe work someone must do?** Wording such as "action", "to do", "follow up", "confirm with", "raise with vendor". Candidate OI. Owner blank unless named.
 6. **Does it describe a change to agreed scope or design with a cost, effort or time implication?** Wording such as "change request", "CR-", "additional scope", "estimate", "quote". Candidate CR.
@@ -211,6 +212,7 @@ All pages live directly under the design register folder. Titles use the confirm
 | Register: Open items | Table with the Open items columns |
 | Register: Change requests | Table with the Change requests columns |
 | Register: Processes | Table with the Processes columns |
+| Register: Systems | Table with the Systems columns |
 | Register: Scope taxonomy | The scope tree (model section 6) as a nested list. The allowed Scope values. |
 | Register: Conventions | Model sections 2 to 5 and 8, condensed for people adding items by hand. |
 | Register: Outstanding | The meeting view (model section 8). A hand-maintained page with seven headed sections, regenerated by the runner on request. |
@@ -220,7 +222,7 @@ Each register page carries the labels `solution-register` and `register-<type>` 
 
 ## 8. Maintenance runs
 
-When asked to "run the register routine": read the seven register pages, regenerate Register: Outstanding and Register: Next phase using model section 8, run the integrity rules and report failures and warnings. This is read-only except for those two pages, which are inside the folder and need no per-page approval; report the diff.
+When asked to "run the register routine": read the eight register pages, regenerate Register: Outstanding and Register: Next phase using model section 8, run the integrity rules and report failures and warnings. This is read-only except for those two pages, which are inside the folder and need no per-page approval; report the diff.
 
 ## 9. Running this runner
 

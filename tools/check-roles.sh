@@ -5,7 +5,8 @@ f=roles.md
 fail=0
 need() { grep -qF -- "$1" "$f" && echo "ok   $1" || { echo "FAIL $1"; fail=1; }; }
 need "# Roles"
-need "Version 1."
+need "Version 1.1"
+need "legacy, system, need"
 need "| Role | Who | May yield | Never yields | Register effect |"
 for r in sme consultant vendor architect unknown; do need "| \`$r\` |"; done
 need "only SMEs describe our processes or needs"

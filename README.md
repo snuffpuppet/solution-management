@@ -53,7 +53,7 @@ Nothing is written to Confluence before Phase 3, and only inside the design regi
 
 ## What this is
 
-A way of keeping track of a solution design when a vendor builds most of it and we are the design authority. It tracks seven kinds of thing: requirements, decisions, limitations, risks, open items, change requests, and the business processes people follow today. Each kind lives in its own register, a table you can open in a meeting and see what is outstanding.
+A way of keeping track of a solution design when a vendor builds most of it and we are the design authority. It tracks eight kinds of thing: requirements, decisions, limitations, risks, open items, change requests, the business processes people follow today, and the systems those processes use today. Each kind lives in its own register, a table you can open in a meeting and see what is outstanding.
 
 Two AI runners, executed inside Claude Code with a human approving every stage, do the heavy lifting:
 

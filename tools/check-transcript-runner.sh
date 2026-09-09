@@ -32,6 +32,11 @@ need 'vendor`, `architect` or `unknown'
 need "3. **Explicit past or cessation?**"
 need "4. **Commitment modal"
 need "5. **Present tense plus stated redundancy?**"
+need "5a. **A shortfall of today's system is a fact, not a limitation.**"
+need "| Current system shortfall |"
+need "| Subject unclear |"
+need 'legacy`, `system`, `need`'
+need "5a. **Systems described.**"
 need "## Appendix. Worked examples"
 need "| Legacy beats current |"
 need "| Split passage |"
