@@ -4,7 +4,14 @@ f="$(dirname "$0")/../solution-register-runner.md"
 fail=0
 need() { grep -qF -- "$1" "$f" && echo "ok   $1" || { echo "FAIL $1"; fail=1; }; }
 absent() { grep -qF -- "$1" "$f" && { echo "FAIL still present: $1"; fail=1; } || echo "ok   absent: $1"; }
-need "Version 2.16, 9 September 2026"
+need "Version 3.0, 9 September 2026"
+need "### 7.1 Local target (default)"
+need "### 7.2 Confluence target"
+need "4a. **Existing rows are the record.**"
+need "tools/check-registers.sh"
+need "| \`registers/systems.md\` |"
+need "target: local | confluence"
+need "Local target, no source pages"
 need "0a1. **Transcript claim of class system?**"
 need "Apply the subject test first"
 need "| Register: Systems |"

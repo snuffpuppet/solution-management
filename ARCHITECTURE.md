@@ -1,6 +1,6 @@
 # Architecture
 
-Version 1.9, 9 September 2026. Owner: Adam Moyes.
+Version 1.10, 9 September 2026. Owner: Adam Moyes.
 
 This document records the decisions that shape this project and the principles that guide changes to it. Any change to the repository is checked against it first. A decision here stands until the owner explicitly overrides it; a change that conflicts with one is a stop, not a judgement call. Deviations the owner approves are recorded at the end.
 
@@ -8,7 +8,7 @@ This document records the decisions that shape this project and the principles t
 
 ## 1. What the project is
 
-A set of playbook-style markdown documents, plus a few shell tools, for managing solution architecture registers on a vendor-delivered project and for feeding those registers from discovery-session transcripts. Two AI runners execute the documents inside Claude Code, one human at a time, with a checkpoint at every stage.
+A set of playbook-style markdown documents, plus a few shell tools, for managing solution architecture registers on a vendor-delivered project and for feeding those registers from discovery-session transcripts. Two AI runners execute the documents inside Claude Code, one human at a time, with a checkpoint at every stage. The registers themselves live in the repository as markdown tables, so the project is self-contained; a Confluence target exists for later integration.
 
 | Layer | File | Responsibility |
 |---|---|---|
@@ -18,6 +18,7 @@ A set of playbook-style markdown documents, plus a few shell tools, for managing
 | Tools | `tools/` | Deterministic shell: the parser, the report script, their tests, and grep checks over the documents. |
 | Skills | `.claude/skills/` | Thin slash commands that launch a runner or a tool. They hold no rules of their own. |
 | Data | `transcripts/` | Input, processed transcripts, claims and the stakeholder registry (all committed). |
+| Registers | `registers/` | The eight registers, the scope taxonomy and the two generated views, one markdown table each. Written by the register runner, editable by hand, committed. |
 | Working state | `work/` | Per-run state, questions, drafts, summaries and reports. Committed at every checkpoint; only `tmp/` subfolders are scratch. |
 
 ---
@@ -85,6 +86,9 @@ A skill validates arguments, stages files, and hands off to a runner document or
 ### D10. Systems are a register type, and a limitation is about the solution
 Added 9 September 2026 (version 1.9). Facts about a system in use today, including what it cannot do, are recorded as SYS rows with numbered facts, the D4 pattern applied to systems. The limitation register is reserved for the solution being built and the vendor's platform, so the disposition queue never carries the defects of a system being replaced. The transcript runner gains the claim class `system`, a deliberate widening of the D2 vocabulary, and both runners apply a subject test before classing anything a limitation; an unnamed subject is a question. Consequence: a current system shortfall reaches the requirements register only through commitment language, as D3 already requires for process steps.
 
+### D11. Registers are built locally, and every ingestion ends with them
+Added 9 September 2026 (version 1.10). The register runner's default target is `registers/` in this repository, one markdown table per register with the model's columns; Confluence is a second target chosen at Phase 0. Rows already in a register are the record: a run reads them first, continues ids from them, appends new rows and changes an existing row only through an approved before and after pair in the dry run. `/ingest-transcript` runs the register runner on the local target after T4, so claims never sit unregistered. The deterministic part of the integrity rules is `tools/check-registers.sh`, which also fails when a register header drifts from model section 7. Consequence: the project distils requirements, processes, systems and decisions from transcripts end to end without any external system.
+
 ### D9. Version bump on every document change
 Model and runner share a version line; the transcript runner has its own. A change to any of them bumps the version and date in the same commit.
 
@@ -113,10 +117,11 @@ transcripts/claims/T<nnn>.json  (claims with class, relations, model, mode)
 [Register runner]  Phase 0 preflight -> 1 inventory -> 2 classify and extract -> 3 build -> 4 reconcile -> 5 handover
       |
       v
-Confluence design register folder: eight registers, taxonomy, conventions, outstanding and next-phase views
+registers/ (default): eight registers, taxonomy, outstanding and next-phase views
+   or the Confluence design register folder, when that target is chosen
 ```
 
-Design documents enter the knowledge base by a separate ingestion outside this repository. Transcripts enter through the transcript runner. Both meet at the claim.
+Design documents enter the knowledge base by a separate ingestion outside this repository. Transcripts enter through the transcript runner. Both meet at the claim. The `/ingest-transcript` skill chains the two runners, so one ingestion ends with the session's claims and the updated registers both committed; `/build-registers` runs the register runner alone.
 
 ### 4.2 Runbook shape
 
@@ -141,8 +146,8 @@ Every runner document has the same skeleton, and a new runner must keep it:
 | T3 | Claims table, processes with Retain flags, legacy list, summary | The write |
 | T4 | Claims file, graph diff if any | Commit and move |
 | Register Phase 2 | Candidate items, questions, scope taxonomy | Building pages |
-| Register Phase 3a | Dry run of every page | Writing to Confluence |
-| Register Phase 4 | Each source page edit, individually | That one edit |
+| Register Phase 3a | Dry run of every register file or page, with updated rows shown before and after | Writing to `registers/` or to Confluence |
+| Register Phase 4 | Each source page edit, individually (Confluence only) | That one edit |
 
 No stage writes outside the work folder before its gate. The questions list is how doubt reaches the human; a runner never resolves doubt by guessing.
 

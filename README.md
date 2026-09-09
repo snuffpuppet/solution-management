@@ -17,7 +17,7 @@ The stages and what each asks you:
 | T1 Passages | Splits the transcript into passages and groups them by topic | Rename or merge topics |
 | T2 Classify | Gives every passage one class: current, legacy, need, context and so on | Answer every numbered question where it was unsure; it will not go on until all are answered |
 | T3 Assemble | Turns classified passages into claims, with quotes, and links them to earlier sessions | Whether a process seen before is an update or a distinct process |
-| T4 Write | Shows a dry run, writes the claims file, commits | Approve the dry run |
+| T4 Write | Shows a dry run, writes the claims file, commits, then hands over to the register runner | Approve the dry run |
 
 Each session gets `T` plus a three-digit number, one higher than any id already present in `work/transcripts/` or `transcripts/claims/`, so a new ingestion can never overwrite an earlier one. T4 also refuses to run if the claims file already exists.
 
@@ -32,24 +32,24 @@ Each session gets `T` plus a three-digit number, one higher than any id already 
 
 Everything above is committed at each checkpoint, so an interrupted run resumes from its last stage next time you start Claude Code.
 
-### Then build the registers
+### Then the registers are built
 
-Claims are not yet requirements. The register runner reads every claims file, plus any design documents in the knowledge base, and turns them into register items: requirements (REQ), decisions (DEC), limitations (LIM), risks (RSK), open items (OI), change requests (CR), and the existing business processes the experts described (PRC). Start Claude Code with the Opus 5 model and give it:
+Claims are not yet requirements. As soon as T4 has committed the claims file, `/ingest-transcript` continues into the register runner, which reads every claims file and turns the new session's claims into register rows: requirements (REQ), decisions (DEC), limitations (LIM), risks (RSK), open items (OI), change requests (CR), the business processes the experts described (PRC) and the systems those processes use (SYS). The registers are markdown tables under `registers/`, one file per type, committed to git. To rebuild or refresh them without a new transcript, type:
 
 ```
-Read solution-register-runner.md and solution-register-model.md in full. Execute the runner from Phase 0. The knowledge base is at transcripts/claims/. Stop at every checkpoint and wait for my approval.
+/build-registers
 ```
 
 | Phase | What it does | What it asks you |
 |---|---|---|
-| Phase 0 Preflight | Checks Confluence access and finds the design register folder | Confirm the space, the folder, the page title prefix and id numbering |
-| Phase 1 Inventory | Counts claims by source and lists what Confluence already holds | Which sources or pages to exclude |
+| Phase 0 Preflight | Reads the existing registers and checks them with `tools/check-registers.sh` | Confirm the target and the knowledge base |
+| Phase 1 Inventory | Counts claims by source and finds which sessions are not yet in the registers | Which sources to exclude |
 | Phase 2 Extract | Proposes one candidate item per claim, with type, relations and scope | Answer its questions: unclear types, duplicate pairs, who implements each item |
-| Phase 3 Build | Shows a dry run of every register page, then writes them | Approve the dry run; accept or fix integrity failures such as items with no owner |
-| Phase 4 Reconcile | Proposes edits to the source pages that tables came from | Yes or no per page |
+| Phase 3 Build | Shows a dry run of every register file, new rows and changed rows, then writes and commits them | Approve the dry run; accept or fix integrity failures such as items with no owner |
+| Phase 4 Reconcile | Proposes edits to Confluence source pages that tables came from; skipped on the local target | Yes or no per page |
 | Phase 5 Handover | Summarises what was written and what is left to fill by hand | Nothing |
 
-Nothing is written to Confluence before Phase 3, and only inside the design register folder. A SME claim classified `current` at T2 becomes a PRC row with its steps; a `need` becomes a REQ; a `legacy` claim never reaches a register. Its working files live in `work/`, beside the transcript runner's, and are committed at each checkpoint in the same way.
+Nothing is written under `registers/` before Phase 3. Rows already there are never rewritten silently: a change to one is shown before and after in the dry run. A SME claim classified `current` at T2 becomes a PRC row with its steps; a `system` claim becomes a fact on a SYS row; a `need` becomes a REQ; a `legacy` claim never reaches a register. Its working files live in `work/`, beside the transcript runner's, and are committed at each checkpoint in the same way.
 
 ## What this is
 
@@ -57,7 +57,7 @@ A way of keeping track of a solution design when a vendor builds most of it and 
 
 Two AI runners, executed inside Claude Code with a human approving every stage, do the heavy lifting:
 
-- the **register runner** reads a knowledge base of claims and builds the registers in Confluence;
+- the **register runner** reads the claims and builds the registers as markdown tables in this repository, or in Confluence when asked;
 - the **transcript runner** turns a recorded discovery session between consultants and our business experts into those claims.
 
 ## Why it exists
@@ -80,7 +80,7 @@ The handover file says where the last session stopped. The agent also checks tha
 
 **Ingest a transcript.** See the quickstart above. Legacy practice is listed for you to see but never becomes a claim the registers will use.
 
-**Build or refresh the registers.** Once transcripts and design documents have been ingested into the knowledge base, launch Claude Code and give it the instruction at the end of `solution-register-runner.md`. It reads the knowledge base, proposes register items with their sources, asks you the questions it cannot answer, shows you a dry run, and only then writes to the Confluence design register folder.
+**Build or refresh the registers.** Every ingestion does this on its own. To do it without a new transcript, type `/build-registers`; add `confluence` to write to a Confluence design register folder instead of `registers/`. It reads the claims, proposes register items with their sources, asks you the questions it cannot answer, shows you a dry run, and only then writes.
 
 **See how ingestion is going.** Type:
 
@@ -116,9 +116,10 @@ Each file below is the single source for its subject. This README does not repea
 | `solution-register-runner.md` | How the register runner works, stage by stage. |
 | `transcript-runner.md` | How the transcript runner works, its classification guide and worked examples. |
 | `docs/superpowers/specs/` | The design specification the transcript runner was built from. |
-| `tools/` | The parser, the report script, their tests, and `check-all.sh`, which verifies the documents still say what the tools expect. |
-| `.claude/skills/` | The slash commands: ingest a transcript, report on ingestion, hand over a session. They only launch the runners and tools. |
+| `tools/` | The parser, the report script, the register integrity check, their tests, and `check-all.sh`, which verifies the documents still say what the tools expect. |
+| `.claude/skills/` | The slash commands: ingest a transcript, build the registers, report on ingestion, hand over a session. They only launch the runners and tools. |
 | `transcripts/` | Where transcripts go in and where processed transcripts and claims come out. |
+| `registers/` | The registers themselves: eight markdown tables, the scope taxonomy and the two generated views. |
 | `diagrams/` | Pictures of the model: a day in the life, one requirement through the registers, and the open item queue. |
 
 `work/` holds the runners' state, questions and summaries and is committed at every checkpoint.
